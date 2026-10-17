@@ -405,7 +405,7 @@
     <div class="header-actions">
       <span class="badge badge-idle" id="accountBadge">⚪ Account Idle (0 Ads)</span>
       <button class="btn btn-secondary" onclick="generateAndConnectVirtualToken()" title="Auto-generate and connect Meta Token">✨ Auto-Token (১-ক্লিক)</button>
-      <a href="connect-token.html" class="btn btn-secondary" style="text-decoration: none;">🔑 1-Click Connect Token</a>
+      <button class="btn btn-secondary" onclick="scrollToCreativeStudio()" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(16, 185, 129, 0.2)); border-color: rgba(245, 158, 11, 0.4); color: #fde68a;">✨ Google Pomelli &amp; Drive Hub</button>
       <button class="btn btn-success" onclick="openCreateCampaignModal()">➕ Create Ad Campaign</button>
       <button class="btn btn-secondary" id="auditBtn" onclick="syncLiveMetrics()">🔄 Sync Live Ads</button>
     </div>
@@ -501,6 +501,86 @@
         </table>
       </div>
     </div>
+
+    <!-- Google Pomelli & Creative Studio Ingestion Hub -->
+    <div class="section-card" id="creativeStudioSection">
+      <div class="section-header" style="flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <div class="section-title" style="display: flex; align-items: center; gap: 0.5rem;">
+            <span>🎨</span>
+            <span>Google Pomelli &amp; Creative Studio Hub</span>
+            <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);">Google Labs &amp; DeepMind Engine</span>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Google Pomelli Business DNA Profiler, Studio Photoshoots, Google Drive Ingestion &amp; 1-Click Ad Set Connect (<code>120254902743810536</code>)
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <a href="https://labs.google/" target="_blank" class="btn btn-secondary" style="font-size: 0.78rem; text-decoration: none; color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);">
+            🌐 Google Labs Pomelli ↗
+          </a>
+          <button class="btn btn-secondary" style="font-size: 0.78rem;" onclick="openPomelliPromptsModal()">📋 Pomelli Prompts</button>
+          <button class="btn btn-secondary" style="font-size: 0.78rem;" onclick="openDriveIngestModal()">📁 Google Drive Ingest</button>
+          <button class="btn btn-secondary" style="font-size: 0.78rem;" onclick="openAICreativeModal()">✨ AI Studio</button>
+          <button class="btn btn-success" style="font-size: 0.78rem; background: linear-gradient(135deg, #f59e0b, #10b981);" onclick="openPomelliModal()">⚡ Pomelli Photoshoot Pack</button>
+        </div>
+      </div>
+
+      <!-- Google Pomelli Business DNA Card -->
+      <div style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(9, 13, 22, 0.9)); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 1.15rem; margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 1.1rem;">🧬</span>
+            <strong style="color: #fde68a; font-size: 0.92rem;">Google Pomelli Business DNA Profile:</strong>
+            <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">Active Brand Profile</span>
+          </div>
+          <button class="btn btn-secondary" style="padding: 0.25rem 0.65rem; font-size: 0.74rem;" onclick="refreshBusinessDNA()">🔄 Re-Scan Brand DNA</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; font-size: 0.82rem;">
+          <div>
+            <div style="color: var(--text-muted); margin-bottom: 0.2rem;">Brand &amp; Web Store:</div>
+            <div style="font-weight: 600; color: #fff;">B-Fashion Explore (<a href="https://bfashionexplore.com" target="_blank" style="color: #60a5fa;">bfashionexplore.com ↗</a>)</div>
+            <div style="color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 0.2rem;">Tone of Voice:</div>
+            <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;" id="pomelliToneTags">
+              <span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #c7d2fe;">Trendy &amp; Youth-Centric</span>
+              <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fde68a;">VIP Exclusivity</span>
+              <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #a7f3d0;">Direct DM Orders</span>
+            </div>
+          </div>
+
+          <div>
+            <div style="color: var(--text-muted); margin-bottom: 0.35rem;">Brand Color DNA Palette:</div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+                <div style="width: 26px; height: 26px; border-radius: 6px; background: #0F172A; border: 1px solid rgba(255,255,255,0.2);" title="Midnight Slate (#0F172A)"></div>
+                <span style="font-size: 0.68rem; color: #94a3b8;">#0F172A</span>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+                <div style="width: 26px; height: 26px; border-radius: 6px; background: #F59E0B; border: 1px solid rgba(255,255,255,0.2);" title="Vibrant Amber (#F59E0B)"></div>
+                <span style="font-size: 0.68rem; color: #f59e0b;">#F59E0B</span>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+                <div style="width: 26px; height: 26px; border-radius: 6px; background: #10B981; border: 1px solid rgba(255,255,255,0.2);" title="Emerald Green (#10B981)"></div>
+                <span style="font-size: 0.68rem; color: #10b981;">#10B981</span>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+                <div style="width: 26px; height: 26px; border-radius: 6px; background: #090D16; border: 1px solid rgba(255,255,255,0.2);" title="Dark Slate (#090D16)"></div>
+                <span style="font-size: 0.68rem; color: #64748b;">#090D16</span>
+              </div>
+            </div>
+            <div style="color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 0.2rem;">Core Campaign Value:</div>
+            <div style="color: #34d399; font-weight: 500;">VIP Messenger &amp; Instagram Direct 20% Discount Voucher Drop</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Creative Packages Catalog -->
+      <div id="creativeCatalogContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+        <!-- Dynamically rendered creative cards with carousel sliders -->
+      </div>
+    </div>
+
 
     <!-- Executive Briefing -->
     <div class="section-card">
@@ -735,6 +815,182 @@ Account is currently clean and ready for first campaign creation.
       </div>
     </div>
   </div>
+
+  <!-- Drive Ingest Modal -->
+  <div class="modal" id="driveIngestModal">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <h2 style="font-family: var(--heading-font); font-size: 1.3rem;">📁 Google Drive &amp; File Asset Intake</h2>
+        <span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc;">Manual Mode</span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">
+        আপনার গুগল ড্রাইভ ফোল্ডার লিংক বা ফাইলের ইউআরএল পেস্ট করুন। এজেন্ট স্বয়ংক্রিয়ভাবে সেখান থেকে মিডিয়া ও টেক্সট প্রসেস করে অ্যাড সেটে কানেক্ট করবে:
+      </p>
+      <div class="form-group">
+        <label>Google Drive Folder / Media URL</label>
+        <input type="text" id="driveUrlInput" placeholder="https://drive.google.com/drive/folders/... অথবা ইমেজ/ভিডিও লিংক">
+      </div>
+      <div class="form-group">
+        <label>Asset Package Name</label>
+        <input type="text" id="drivePkgName" value="B-Fashion Exclusive Drive Drop">
+      </div>
+      <div class="form-group">
+        <label>Creative Format</label>
+        <select id="driveCreativeType">
+          <option value="CAROUSEL">Carousel (Multi-Card Slide - Recommended)</option>
+          <option value="SINGLE_IMAGE">Single Image / Photo (1080x1080)</option>
+          <option value="VIDEO">Video / Reel (1080x1920)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Primary Text (Ad Copy)</label>
+        <textarea id="drivePrimaryText" rows="2" placeholder="🔥 B-Fashion Exclusive VIP Drop! Chat directly with our stylists on Messenger or Instagram Direct..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Headline</label>
+        <input type="text" id="driveHeadline" value="Chat with Stylist &amp; Get 20% Off 💬">
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+        <button class="btn btn-secondary" onclick="closeDriveIngestModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="submitDriveIngest()">📥 Ingest &amp; Catalog</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Creative Studio Modal -->
+  <div class="modal" id="aiCreativeModal">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <h2 style="font-family: var(--heading-font); font-size: 1.3rem;">✨ Autonomous AI Creative Studio</h2>
+        <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">Autonomous AI</span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">
+        এজেন্ট সম্পূর্ণ নিজে থেকে উচ্চ কনভার্সন উপযোগী ফ্যাশন ক্যারোজল কার্ড, কপি এবং অফার বান্ডিল তৈরি করবে:
+      </p>
+      <div class="form-group">
+        <label>Creative Format</label>
+        <select id="aiCreativeFormat">
+          <option value="CAROUSEL">Carousel Multi-Card Suite (৩টি স্লাইড কার্ড + অফার)</option>
+          <option value="SINGLE_IMAGE">Single Image / Photo Ad (1080x1080 Feed)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Campaign Theme</label>
+        <select id="aiCreativeTheme">
+          <option value="VIP Drop 20% Off">VIP Drop 20% Off (মেসেঞ্জার ও ইনস্টাগ্রাম ডিসকাউন্ট)</option>
+          <option value="Festive Streetwear Drop">Festive Streetwear Drop (ঈদ ও উৎসব স্পেশাল)</option>
+          <option value="Trending Summer Collection">Trending Summer Collection (হট ট্রেন্ডস)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Language (ভাষা)</label>
+        <select id="aiCreativeLanguage">
+          <option value="bn">বাংলা (Bengali - High Converting Local Copy)</option>
+          <option value="en">English (International / Premium)</option>
+        </select>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+        <button class="btn btn-secondary" onclick="closeAICreativeModal()">Cancel</button>
+        <button class="btn btn-success" id="aiGenBtn" onclick="submitAICreative()">⚡ 1-Click Generate Suite</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google Pomelli Photoshoot Modal -->
+  <div class="modal" id="pomelliModal">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <h2 style="font-family: var(--heading-font); font-size: 1.3rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span>⚡</span> Google Pomelli Studio Photoshoot
+        </h2>
+        <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">Google Labs Powered</span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">
+        গুগল পমেলি (Google Pomelli) ব্র্যান্ড ডিএনএ অনুসরণ করে স্টুডিও-কোয়ালিটি ফটোশুট, 1:1 ফিড ক্যারোজল এবং 9:16 রিলস/স্টোরি ক্রিয়েটিভ একসাথে তৈরি করুন:
+      </p>
+      <div class="form-group">
+        <label>Product Drop Name</label>
+        <input type="text" id="pomelliProductName" value="B-Fashion VIP Drop-Shoulder Streetwear Drop">
+      </div>
+      <div class="form-group">
+        <label>Product Category</label>
+        <select id="pomelliCategory">
+          <option value="Men's &amp; Unisex Streetwear">Men's &amp; Unisex Streetwear</option>
+          <option value="Drop-Shoulder Hoodies &amp; Polos">Drop-Shoulder Hoodies &amp; Polos</option>
+          <option value="Festive Ethnic &amp; Panjabi">Festive Ethnic &amp; Panjabi</option>
+          <option value="Women's Contemporary Fusion">Women's Contemporary Fusion</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Lighting &amp; Studio Atmosphere</label>
+        <select id="pomelliLighting">
+          <option value="Studio High-Key Warm Commercial">Studio High-Key Warm Commercial (Clear &amp; Crisp)</option>
+          <option value="Cinematic Golden Hour">Cinematic Golden Hour (Warm Lifestyle Glow)</option>
+          <option value="Cyberpunk Neon Twilight">Cyberpunk Neon Twilight (Bold Urban Style)</option>
+          <option value="Clean Minimalist Scandinavian">Clean Minimalist Scandinavian (Elegant Slate)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Aspect Ratio Coverage</label>
+        <div style="font-size: 0.82rem; color: #a5b4fc; background: rgba(99, 102, 241, 0.1); padding: 0.5rem 0.75rem; border-radius: 8px;">
+          ✓ 1:1 Feed Carousel (3 Sequential Cards) + ✓ 9:16 Vertical Reel/Story + ✓ 1:1 Studio Hero
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Language (ভাষা)</label>
+        <select id="pomelliLanguage">
+          <option value="bn">বাংলা (Bengali - High Converting Local Copy)</option>
+          <option value="en">English (International / Premium)</option>
+        </select>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+        <button class="btn btn-secondary" onclick="closePomelliModal()">Cancel</button>
+        <button class="btn btn-success" id="pomelliGenBtn" style="background: linear-gradient(135deg, #f59e0b, #10b981);" onclick="submitPomelliPhotoshoot()">🚀 Generate Pomelli Campaign Pack</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google Pomelli Prompts Modal -->
+  <div class="modal" id="pomelliPromptsModal">
+    <div class="modal-content" style="max-width: 650px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <h2 style="font-family: var(--heading-font); font-size: 1.25rem;">📋 Google Pomelli &amp; Imagen 3 Prompts</h2>
+        <span class="badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9;">Prompt Studio</span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 1rem;">
+        এই প্রম্পটগুলো কপি করে আপনি সরাসরি <a href="https://labs.google/" target="_blank" style="color: #60a5fa;">Google Pomelli (Labs) ↗</a> অথবা Google Imagen-এ পেস্ট করে নতুন ভ্যারিয়েন্ট তৈরি করতে পারেন:
+      </p>
+
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+          <strong style="font-size: 0.82rem; color: #fde68a;">1. Feed 1:1 Studio Photoshoot Prompt:</strong>
+          <button class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.72rem;" onclick="copyPrompt('promptFeedText')">📋 Copy</button>
+        </div>
+        <textarea id="promptFeedText" rows="3" readonly style="font-size: 0.78rem; font-family: monospace;"></textarea>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+          <strong style="font-size: 0.82rem; color: #a5b4fc;">2. Reels 9:16 Vertical Story Prompt:</strong>
+          <button class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.72rem;" onclick="copyPrompt('promptReelText')">📋 Copy</button>
+        </div>
+        <textarea id="promptReelText" rows="3" readonly style="font-size: 0.78rem; font-family: monospace;"></textarea>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+          <strong style="font-size: 0.82rem; color: #a7f3d0;">3. Multi-Card Carousel Series Prompt:</strong>
+          <button class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.72rem;" onclick="copyPrompt('promptCarText')">📋 Copy</button>
+        </div>
+        <textarea id="promptCarText" rows="3" readonly style="font-size: 0.78rem; font-family: monospace;"></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+        <button class="btn btn-secondary" onclick="closePomelliPromptsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
 
   <script>
     const CLIENT_SLUG = 'b_fashion_explore';
@@ -1105,7 +1361,281 @@ Account is currently clean and ready for first campaign creation.
       }
     }
 
+    function scrollToCreativeStudio() {
+      const el = document.getElementById('creativeStudioSection');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    let creativeAssetsList = [];
+
+    async function fetchAndRenderCreatives() {
+      try {
+        const resp = await fetch('/api/creative/assets');
+        if (resp.ok) {
+          const data = await resp.json();
+          creativeAssetsList = data.assets || [];
+          renderCreativeCatalog();
+        }
+      } catch (err) {
+        console.warn('Could not fetch creative assets:', err);
+      }
+    }
+
+    function renderCreativeCatalog() {
+      const container = document.getElementById('creativeCatalogContainer');
+      if (!container) return;
+
+      if (creativeAssetsList.length === 0) {
+        container.innerHTML = '<div style="color: var(--text-muted); font-size: 0.9rem; grid-column: 1/-1;">কোনো ক্রিয়েটিভ প্যাকেজ নেই। উপরে ড্রাইভ থেকে ইমপোর্ট করুন বা গুগল পমেলি দিয়ে তৈরি করুন।</div>';
+        return;
+      }
+
+      container.innerHTML = creativeAssetsList.map(a => {
+        const isCarousel = a.creative_type === 'CAROUSEL';
+        const cards = a.carousel_cards || [];
+        const previewImg = a.media_url || (cards[0] ? cards[0].image_url : '');
+        const meta = a.metadata || {};
+        const isPomelli = meta.tool === 'Google Pomelli' || (a.name && a.name.includes('Pomelli'));
+        
+        let formatBadge = `<span class="badge" style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc;">🖼️ 1:1 Feed</span>`;
+        if (isCarousel) {
+          formatBadge = `<span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">🎠 Carousel (${cards.length} Cards)</span>`;
+        } else if (meta.aspect_ratio === '9:16') {
+          formatBadge = `<span class="badge" style="background: rgba(236, 72, 153, 0.2); color: #f472b6;">📱 9:16 Reels/Stories</span>`;
+        }
+
+        let sourceBadge = `<span class="badge" style="background: rgba(139, 92, 246, 0.15); color: #c084fc;">✨ AI Studio</span>`;
+        if (isPomelli) {
+          sourceBadge = `<span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);">⚡ Google Pomelli</span>`;
+        } else if (a.source === 'MANUAL_DRIVE_UPLOAD') {
+          sourceBadge = `<span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">📁 Google Drive</span>`;
+        }
+
+        return `
+          <div class="ad-card-mockup" style="display: flex; flex-direction: column; justify-content: space-between; border-color: ${isPomelli ? 'rgba(245, 158, 11, 0.3)' : 'var(--card-border)'};">
+            <div>
+              <div style="padding: 0.85rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; background: ${isPomelli ? 'rgba(245, 158, 11, 0.05)' : 'transparent'};">
+                <div style="font-weight: 600; font-size: 0.88rem; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 170px;">${a.name}</div>
+                <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">${formatBadge}${sourceBadge}</div>
+              </div>
+              <div style="height: 160px; background-image: url('${previewImg}'); background-size: cover; background-position: center; position: relative;">
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.88)); padding: 0.5rem 0.85rem; color: white; font-weight: 600; font-size: 0.82rem;">
+                  ${a.headline}
+                </div>
+              </div>
+              <div style="padding: 0.75rem 1rem; font-size: 0.8rem; color: #cbd5e1; line-height: 1.45;">
+                ${a.primary_text}
+              </div>
+            </div>
+            <div style="padding: 0.85rem 1rem; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.75rem; color: #60a5fa;">Ad Set: 120254902743810536</span>
+              <button class="btn btn-success" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;" onclick="attachCreativeToAdSet('${a.asset_id}')">
+                🔗 Attach to Ad Set
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+
+    function openDriveIngestModal() {
+      document.getElementById('driveIngestModal').style.display = 'flex';
+    }
+    function closeDriveIngestModal() {
+      document.getElementById('driveIngestModal').style.display = 'none';
+    }
+
+    async function submitDriveIngest() {
+      const url = document.getElementById('driveUrlInput').value.trim();
+      const name = document.getElementById('drivePkgName').value.trim();
+      const type = document.getElementById('driveCreativeType').value;
+      const text = document.getElementById('drivePrimaryText').value.trim();
+      const headline = document.getElementById('driveHeadline').value.trim();
+
+      if (!url) {
+        alert('অনুগ্রহ করে গুগল ড্রাইভ লিংক অথবা মিডিয়া ইউআরএল প্রদান করুন।');
+        return;
+      }
+
+      try {
+        const resp = await fetch('/api/creative/drive-ingest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            drive_url: url,
+            name: name || 'Google Drive Drop',
+            creative_type: type,
+            primary_text: text,
+            headline: headline,
+            target_placement: 'ALL'
+          })
+        });
+        if (resp.ok) {
+          alert('✅ ড্রাইভ অ্যাসেট সফলভাবে ইমপোর্ট ও ক্যাটালগ করা হয়েছে!');
+          closeDriveIngestModal();
+          fetchAndRenderCreatives();
+        }
+      } catch (err) {
+        alert('ড্রাইভ ইমপোর্ট ব্যর্থ হয়েছে: ' + err.message);
+      }
+    }
+
+    function openAICreativeModal() {
+      document.getElementById('aiCreativeModal').style.display = 'flex';
+    }
+    function closeAICreativeModal() {
+      document.getElementById('aiCreativeModal').style.display = 'none';
+    }
+
+    async function submitAICreative() {
+      const format = document.getElementById('aiCreativeFormat').value;
+      const theme = document.getElementById('aiCreativeTheme').value;
+      const lang = document.getElementById('aiCreativeLanguage').value;
+      const btn = document.getElementById('aiGenBtn');
+      btn.innerText = '✨ জেনারেট হচ্ছে...';
+      btn.disabled = true;
+
+      try {
+        const resp = await fetch('/api/creative/generate-ai', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            creative_type: format,
+            theme: theme,
+            language: lang,
+            target_placement: 'ALL'
+          })
+        });
+        if (resp.ok) {
+          alert(`✅ এআই ক্রিয়েটিভ সুইট সফলভাবে জেনারেট হয়েছে!\nফরম্যাট: ${format}\nথিম: ${theme}`);
+          closeAICreativeModal();
+          fetchAndRenderCreatives();
+        }
+      } catch (err) {
+        alert('এআই ক্রিয়েটিভ জেনারেট ব্যর্থ: ' + err.message);
+      } finally {
+        btn.innerText = '⚡ 1-Click Generate Suite';
+        btn.disabled = false;
+      }
+    }
+
+    async function attachCreativeToAdSet(assetId) {
+      const activeCamp = realCampaigns[0] || { id: '120254902709800536', ad_set_id: '120254902743810536' };
+      const campId = activeCamp.id || '120254902709800536';
+      const adSetId = activeCamp.ad_set_id || '120254902743810536';
+
+      try {
+        const resp = await fetch('/api/creative/attach-to-adset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            client_slug: CLIENT_SLUG,
+            campaign_id: campId,
+            ad_set_id: adSetId,
+            asset_id: assetId
+          })
+        });
+        if (resp.ok) {
+          alert(`🎉 চমৎকার! ক্রিয়েটিভ প্যাকেজটি সফলভাবে Ad Set (${adSetId})-এ কানেক্ট করা হয়েছে!\n\nএখন "Inside Ad (বিস্তারিত)" উইন্ডোতে অ্যাড ক্রিয়েটিভ লাইভ আপডেট দেখতে পাবেন।`);
+          syncLiveMetrics();
+          viewAdDetails(campId);
+        }
+      } catch (err) {
+        alert('ক্রিয়েটিভ সংযুক্ত করতে সমস্যা: ' + err.message);
+      }
+    }
+
+    function openPomelliModal() {
+      document.getElementById('pomelliModal').style.display = 'flex';
+    }
+    function closePomelliModal() {
+      document.getElementById('pomelliModal').style.display = 'none';
+    }
+
+    async function submitPomelliPhotoshoot() {
+      const prodName = document.getElementById('pomelliProductName').value.trim();
+      const cat = document.getElementById('pomelliCategory').value;
+      const lighting = document.getElementById('pomelliLighting').value;
+      const lang = document.getElementById('pomelliLanguage').value;
+      const btn = document.getElementById('pomelliGenBtn');
+      btn.innerText = '⚡ গুগল পমেলি তৈরি করছে...';
+      btn.disabled = true;
+
+      try {
+        const resp = await fetch('/api/creative/pomelli/generate-campaign', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            product_name: prodName || 'VIP Streetwear Drop',
+            category: cat,
+            lighting_style: lighting,
+            language: lang,
+            call_to_action: 'SEND_MESSAGE',
+            discount_rate: '20%'
+          })
+        });
+        if (resp.ok) {
+          const res = await resp.json();
+          alert(`🎉 সফল! Google Pomelli Studio ${res.count || 3}টি ক্রিয়েটিভ ফরম্যাট সফলভাবে তৈরি করেছে:\n\n1. 1:1 Feed Carousel (3 Cards)\n2. 9:16 Vertical Story/Reel (Instagram Direct)\n3. 1:1 Studio Hero Product Shot\n\nব্র্যান্ড ডিএনএ অনুযায়ী কালার ও কপি সাজানো হয়েছে।`);
+          closePomelliModal();
+          fetchAndRenderCreatives();
+        }
+      } catch (err) {
+        alert('গুগল পমেলি জেনারেশন ব্যর্থ: ' + err.message);
+      } finally {
+        btn.innerText = '🚀 Generate Pomelli Campaign Pack';
+        btn.disabled = false;
+      }
+    }
+
+    async function openPomelliPromptsModal() {
+      const prodName = document.getElementById('pomelliProductName')?.value || 'B-Fashion VIP Drop';
+      try {
+        const resp = await fetch(`/api/creative/pomelli/prompts?product_name=${encodeURIComponent(prodName)}`);
+        if (resp.ok) {
+          const data = await resp.json();
+          const p = data.prompts || {};
+          document.getElementById('promptFeedText').value = p.feed_1x1_studio_photoshoot || '';
+          document.getElementById('promptReelText').value = p.reels_9x16_vertical_story || '';
+          document.getElementById('promptCarText').value = p.carousel_card_series || '';
+        }
+      } catch (e) {
+        console.warn('Could not fetch pomelli prompts:', e);
+      }
+      document.getElementById('pomelliPromptsModal').style.display = 'flex';
+    }
+
+    function closePomelliPromptsModal() {
+      document.getElementById('pomelliPromptsModal').style.display = 'none';
+    }
+
+    function copyPrompt(elementId) {
+      const el = document.getElementById(elementId);
+      if (el) {
+        navigator.clipboard.writeText(el.value);
+        alert('📋 প্রম্পট ক্লিপবোর্ডে কপি করা হয়েছে! এখন আপনি Google Pomelli বা Google Imagen-এ পেস্ট করতে পারেন।');
+      }
+    }
+
+    async function refreshBusinessDNA() {
+      try {
+        const resp = await fetch('/api/creative/pomelli/extract-dna', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ website_url: 'https://bfashionexplore.com' })
+        });
+        if (resp.ok) {
+          alert('✅ Google Pomelli Business DNA সফলভাবে রি-স্ক্যান এবং সিঙ্ক করা হয়েছে!');
+          fetchAndRenderCreatives();
+        }
+      } catch (e) {
+        alert('Business DNA স্ক্যান ব্যর্থ: ' + e.message);
+      }
+    }
+
     function copyBriefing() {
+
       const text = document.getElementById('briefingContent').innerText;
       navigator.clipboard.writeText(text);
       alert('Report copied to clipboard!');
@@ -1114,6 +1644,7 @@ Account is currently clean and ready for first campaign creation.
     window.addEventListener('DOMContentLoaded', () => {
       renderState();
       syncLiveMetrics();
+      fetchAndRenderCreatives();
     });
   </script>
 </body>

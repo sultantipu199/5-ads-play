@@ -22,6 +22,13 @@ from agency_engine.actions.rollback import RollbackEngine
 from agency_engine.agents.analyst import AnalystAgent
 from agency_engine.agents.coordinator import CoordinatorAgent
 from agency_engine.agents.media_buyer import MediaBuyerAgent
+from agency_engine.creative import (
+    AICreativeStudio,
+    CreativeType,
+    DriveAssetIngestor,
+    GooglePomelliEngine,
+    PomelliPhotoshootConfig,
+)
 from agency_engine.domain.enums import AutonomyMode, PlatformName
 from agency_engine.domain.models import ActionProposal
 from agency_engine.ingestion.fetcher import MetricFetcher
@@ -194,6 +201,183 @@ async def generate_virtual_token(client_slug: str = "b_fashion_explore") -> dict
         "success": True,
         "token": token,
         "message": "Virtual Meta Token generated and connected successfully for Facebook & Instagram Ads!",
+    }
+
+
+ai_studio = AICreativeStudio()
+drive_ingestor = DriveAssetIngestor()
+pomelli_engine = GooglePomelliEngine()
+
+initial_pomelli_assets = pomelli_engine.generate_campaign_pack(
+    PomelliPhotoshootConfig(
+        product_name="VIP Drop-Shoulder Streetwear Drop",
+        category="Men's & Unisex Streetwear",
+        language="bn",
+        call_to_action="SEND_MESSAGE",
+        discount_rate="20%",
+    )
+)
+initial_carousel = ai_studio.generate_carousel_suite(theme="VIP Drop 20% Off", language="bn")
+initial_single = ai_studio.generate_single_image_ad(theme="Festive Streetwear", language="bn")
+creative_assets_repo: list[dict[str, Any]] = [
+    *[a.model_dump() for a in initial_pomelli_assets],
+    initial_carousel.model_dump(),
+    initial_single.model_dump(),
+]
+
+
+@app.get("/api/creative/pomelli/dna")
+async def get_pomelli_business_dna() -> dict[str, Any]:
+    return {"dna": pomelli_engine.dna.model_dump()}
+
+
+class ExtractDNARequest(BaseModel):
+    website_url: str
+    brand_name: str | None = None
+
+
+@app.post("/api/creative/pomelli/extract-dna")
+async def extract_pomelli_dna(req: ExtractDNARequest) -> dict[str, Any]:
+    dna = pomelli_engine.extract_business_dna(req.website_url, brand_name=req.brand_name)
+    return {"success": True, "dna": dna.model_dump()}
+
+
+class GeneratePomelliCampaignRequest(BaseModel):
+    product_name: str = "VIP Drop-Shoulder Streetwear Collection"
+    category: str = "Streetwear & Casual Apparel"
+    lighting_style: str = "Studio High-Key Warm Commercial"
+    language: str = "bn"
+    call_to_action: str = "SEND_MESSAGE"
+    discount_rate: str = "20%"
+
+
+@app.post("/api/creative/pomelli/generate-campaign")
+async def generate_pomelli_campaign(req: GeneratePomelliCampaignRequest) -> dict[str, Any]:
+    cfg = PomelliPhotoshootConfig(
+        product_name=req.product_name,
+        category=req.category,
+        lighting_style=req.lighting_style,
+        language=req.language,
+        call_to_action=req.call_to_action,
+        discount_rate=req.discount_rate,
+    )
+    assets = pomelli_engine.generate_campaign_pack(cfg)
+    dumped = [a.model_dump() for a in assets]
+    for d in reversed(dumped):
+        creative_assets_repo.insert(0, d)
+    return {
+        "success": True,
+        "count": len(dumped),
+        "assets": dumped,
+        "business_dna": pomelli_engine.dna.model_dump(),
+    }
+
+
+@app.get("/api/creative/pomelli/prompts")
+async def get_pomelli_prompts(product_name: str = "VIP Streetwear Drop") -> dict[str, Any]:
+    prompts = pomelli_engine.generate_pomelli_prompts(product_name=product_name)
+    return {"product_name": product_name, "prompts": prompts}
+
+
+@app.get("/api/creative/assets")
+async def get_creative_assets() -> dict[str, Any]:
+    return {"assets": creative_assets_repo}
+
+
+
+class GenerateAICreativeRequest(BaseModel):
+    creative_type: str = "CAROUSEL"  # CAROUSEL or SINGLE_IMAGE
+    theme: str = "VIP Drop 20% Off"
+    language: str = "bn"
+    target_placement: str = "ALL"
+
+
+@app.post("/api/creative/generate-ai")
+async def generate_ai_creative(req: GenerateAICreativeRequest) -> dict[str, Any]:
+    c_type = req.creative_type.upper()
+    if c_type == "CAROUSEL":
+        asset = ai_studio.generate_carousel_suite(
+            theme=req.theme,
+            language=req.language,
+            target_placement=req.target_placement,
+        )
+    else:
+        asset = ai_studio.generate_single_image_ad(
+            theme=req.theme,
+            language=req.language,
+            target_placement=req.target_placement,
+        )
+
+    asset_data = asset.model_dump()
+    creative_assets_repo.insert(0, asset_data)
+    return {"success": True, "asset": asset_data}
+
+
+class DriveIngestRequest(BaseModel):
+    drive_url: str
+    name: str = "Google Drive Asset Drop"
+    creative_type: str = "CAROUSEL"
+    primary_text: str = ""
+    headline: str = ""
+    target_placement: str = "ALL"
+    custom_cards: list[dict[str, Any]] | None = None
+
+
+@app.post("/api/creative/drive-ingest")
+async def ingest_drive_asset(req: DriveIngestRequest) -> dict[str, Any]:
+    c_type = CreativeType.CAROUSEL if req.creative_type.upper() == "CAROUSEL" else CreativeType.SINGLE_IMAGE
+    asset = drive_ingestor.ingest_from_drive_link(
+        drive_url=req.drive_url,
+        name=req.name,
+        creative_type=c_type,
+        primary_text=req.primary_text,
+        headline=req.headline,
+        target_placement=req.target_placement,
+        custom_cards=req.custom_cards,
+    )
+    asset_data = asset.model_dump()
+    creative_assets_repo.insert(0, asset_data)
+    return {"success": True, "asset": asset_data}
+
+
+class AttachCreativeRequest(BaseModel):
+    client_slug: str = "b_fashion_explore"
+    campaign_id: str
+    ad_set_id: str
+    asset_id: str
+
+
+@app.post("/api/creative/attach-to-adset")
+async def attach_creative_to_adset(req: AttachCreativeRequest) -> dict[str, Any]:
+    asset = next((a for a in creative_assets_repo if a["asset_id"] == req.asset_id), None)
+    if not asset:
+        raise HTTPException(status_code=404, detail="Creative asset not found.")
+
+    matched_camp = next((c for c in managed_campaigns if c["id"] == req.campaign_id), None)
+    now_str = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S")
+
+    if matched_camp:
+        matched_camp["attached_creative"] = asset
+        matched_camp["primary_text"] = asset["primary_text"]
+        matched_camp["headline"] = asset["headline"]
+        matched_camp["media_url"] = asset["media_url"]
+        matched_camp["carousel_cards"] = asset.get("carousel_cards", [])
+        trail = matched_camp.setdefault("audit_trail", [])
+        trail.append({
+            "step": f"Ad Creative Attached: {asset['name']}",
+            "time": now_str,
+            "fingerprint": f"creative_{req.asset_id[:8]}",
+            "note": f"Attached {asset['creative_type']} creative from {asset['source']}.",
+            "status": "DONE",
+        })
+
+    return {
+        "success": True,
+        "campaign_id": req.campaign_id,
+        "ad_set_id": req.ad_set_id,
+        "asset": asset,
+        "message": f"Creative '{asset['name']}' successfully attached to Ad Set {req.ad_set_id}!",
+        "meta_app_live_toggle_url": "https://developers.facebook.com/apps/2145694369400433/settings/basic/",
     }
 
 
