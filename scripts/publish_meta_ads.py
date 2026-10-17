@@ -12,6 +12,12 @@ import sys
 
 import httpx
 
+# Ensure Windows terminal doesn't crash on emojis
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 ACT_ID = "act_2665580250239749"
 PAGE_ID = "105656909238175"
 PAGE_NAME = "Tipu Sultan - AI & Data Growth Architect"
