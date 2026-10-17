@@ -1,0 +1,16 @@
+safety:
+  default_mode: "READ_ONLY" # Options: READ_ONLY, SHADOW, APPROVAL_REQUIRED, LIMITED_AUTONOMY
+  max_budget_increase_percent: 10.0
+  max_daily_spend_change_sar: 500.0
+  max_actions_per_cycle: 3
+  freshness_limit_minutes: 180
+  confidence_threshold: 0.85
+  require_human_approval_for:
+    - PAUSE
+    - ENABLE
+    - UPDATE_BUDGET
+  circuit_breakers:
+    block_if_data_stale: true
+    block_if_currency_unknown: true
+    block_if_attribution_unknown: true
+    block_if_partial_failure: true

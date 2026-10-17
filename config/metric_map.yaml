@@ -1,0 +1,31 @@
+mappings:
+  meta:
+    spend: "spend"
+    impressions: "impressions"
+    clicks: "clicks"
+    conversions: "actions.purchase"
+    default_attribution_window: "7d_click_1d_view"
+  google_ads:
+    spend: "metrics.cost_micros"
+    impressions: "metrics.impressions"
+    clicks: "metrics.clicks"
+    conversions: "metrics.conversions"
+    default_attribution_window: "30d_click"
+  linkedin:
+    spend: "costInLocalCurrency"
+    impressions: "impressions"
+    clicks: "clicks"
+    conversions: "externalWebsiteConversions"
+    default_attribution_window: "30d_click_1d_view"
+  tiktok:
+    spend: "stat_cost"
+    impressions: "show_cnt"
+    clicks: "click_cnt"
+    conversions: "conversion"
+    default_attribution_window: "7d_click_1d_view"
+  snapchat:
+    spend: "spend"
+    impressions: "impressions"
+    clicks: "swipes"
+    conversions: "conversion_purchases"
+    default_attribution_window: "28d_click_1d_view"
