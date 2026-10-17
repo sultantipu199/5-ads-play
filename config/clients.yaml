@@ -1,0 +1,52 @@
+clients:
+  b_fashion_explore:
+    name: "B-Fashion Explore"
+    timezone: "Asia/Dhaka"
+    reporting_currency: "USD"
+    platforms:
+      meta:
+        account_id: "act_2665580250239749"
+        secret_ref: "agency/b_fashion_explore/meta"
+        enabled: true
+      google_ads:
+        account_id: "123-456-7890"
+        secret_ref: "agency/b_fashion_explore/google_ads"
+        enabled: false
+      linkedin:
+        account_id: "urn:li:sponsoredAccount:54321"
+        secret_ref: "agency/b_fashion_explore/linkedin"
+        enabled: false
+      tiktok:
+        account_id: "7123456789012345"
+        secret_ref: "agency/b_fashion_explore/tiktok"
+        enabled: false
+      snapchat:
+        account_id: "snap_acc_445566"
+        secret_ref: "agency/b_fashion_explore/snapchat"
+        enabled: false
+
+  global_brand:
+    name: "Global Brand Enterprise"
+    timezone: "Asia/Riyadh"
+    reporting_currency: "SAR"
+    platforms:
+      meta:
+        account_id: "act_987654321"
+        secret_ref: "agency/global_brand/meta"
+        enabled: true
+      google_ads:
+        account_id: "123-456-7890"
+        secret_ref: "agency/global_brand/google_ads"
+        enabled: true
+      linkedin:
+        account_id: "urn:li:sponsoredAccount:54321"
+        secret_ref: "agency/global_brand/linkedin"
+        enabled: true
+      tiktok:
+        account_id: "7123456789012345"
+        secret_ref: "agency/global_brand/tiktok"
+        enabled: true
+      snapchat:
+        account_id: "snap_acc_445566"
+        secret_ref: "agency/global_brand/snapchat"
+        enabled: true

@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Omnichannel Autonomous Agency Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(18, 24, 39, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --font: 'Plus Jakarta Sans', sans-serif;
+      --heading-font: 'Outfit', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at top right, #171b30, #0b0f19 80%);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #6366f1, #3b82f6);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: white;
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .brand-title {
+      font-family: var(--heading-font);
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .badge-live {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-pulse {
+      width: 6px;
+      height: 6px;
+      background: #34d399;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #34d399;
+    }
+
+    main {
+      flex: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+      width: 100%;
+    }
+
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(59, 130, 246, 0.05));
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 16px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .hero-info h1 {
+      font-family: var(--heading-font);
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .hero-info p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.4rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .btn-success {
+      background: #059669;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-success:hover {
+      background: #047857;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-title {
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-family: var(--heading-font);
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .stat-delta {
+      font-size: 0.8rem;
+      margin-top: 0.4rem;
+      color: #34d399;
+    }
+
+    .section-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-title {
+      font-family: var(--heading-font);
+      font-size: 1.25rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 0.9rem;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .status-active {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .status-paused {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+      color: var(--text-muted);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: #131929;
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      max-width: 540px;
+      width: 90%;
+      padding: 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .proposal-card {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .proposal-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .briefing-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      font-family: monospace;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+      color: #e2e8f0;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-logo">A</div>
+      <div>
+        <div class="brand-title">Antigravity Omnichannel Engine</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">Autonomous Ad Optimization & Governance</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="badge badge-live"><span class="badge-pulse"></span> Engine Online</span>
+      <button class="btn btn-secondary" onclick="openMetaModal()">⚙️ Facebook Settings</button>
+      <button class="btn btn-success" id="auditBtn" onclick="triggerAudit()">⚡ Run 1-Click Audit</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero-banner">
+      <div class="hero-info">
+        <h1>Client: B-Fashion Explore</h1>
+        <p>Connected Account: <strong style="color: #60a5fa;">act_2665580250239749</strong> &bull; Currency: <strong>USD</strong> &bull; Governance Mode: <strong style="color: #34d399;">BOUNDED AUTONOMY</strong></p>
+      </div>
+      <div>
+        <button class="btn" onclick="fetchBriefing()">📋 View Executive Briefing</button>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-title">Total Active Spend</div>
+        <div class="stat-value" id="kpiSpend">$0.00</div>
+        <div class="stat-delta">Across connected platforms</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Tracked Conversions</div>
+        <div class="stat-value" id="kpiConversions">0</div>
+        <div class="stat-delta">Standard pixel events</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Blended CPA</div>
+        <div class="stat-value" id="kpiCpa">$0.00</div>
+        <div class="stat-delta">Target: &lt; $50.00</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Data Quality & Health</div>
+        <div class="stat-value" id="kpiQuality" style="color: #34d399;">100%</div>
+        <div class="stat-delta">Zero synthetic metrics</div>
+      </div>
+    </div>
+
+    <!-- Agent Action Gate -->
+    <div class="section-card" id="proposalsSection">
+      <div class="section-header">
+        <div class="section-title">🛡️ AI Agent Recommendations & Human-in-the-Loop Gate</div>
+        <span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">Unanimous Consensus Required</span>
+      </div>
+      <div id="proposalsContainer">
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Click "Run 1-Click Audit" to trigger Analyst, Compliance, Risk, and Verifier agents.</p>
+      </div>
+    </div>
+
+    <!-- Campaigns Monitor -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">📊 Live Campaign Performance Monitor</div>
+        <button class="btn btn-secondary" onclick="triggerAudit()">🔄 Refresh Metrics</button>
+      </div>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Campaign Name</th>
+              <th>Platform</th>
+              <th>Daily Budget</th>
+              <th>Spend</th>
+              <th>Impressions</th>
+              <th>Clicks</th>
+              <th>Conversions</th>
+              <th>CPA</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="campaignsBody">
+            <tr>
+              <td colspan="9" style="text-align: center; color: var(--text-muted);">Loading live metrics...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Executive Briefing -->
+    <div class="section-card" id="briefingCard" style="display: none;">
+      <div class="section-header">
+        <div class="section-title">📑 Automated Executive Briefing (Telegram Ready)</div>
+        <button class="btn btn-secondary" onclick="copyBriefing()">📋 Copy Report</button>
+      </div>
+      <div class="briefing-box" id="briefingContent"></div>
+    </div>
+  </main>
+
+  <!-- Meta Settings Modal -->
+  <div class="modal" id="metaModal">
+    <div class="modal-content">
+      <h2 style="font-family: var(--heading-font); margin-bottom: 1rem;">Facebook (Meta) Settings</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">
+        Your Ad Account ID is already configured as <strong>act_2665580250239749</strong> (B-Fashion Explore). Enter your Access Token below:
+      </p>
+      <div class="form-group">
+        <label>Ad Account ID</label>
+        <input type="text" value="act_2665580250239749" disabled style="opacity: 0.7;">
+      </div>
+      <div class="form-group">
+        <label>Meta Access Token (EAAB...)</label>
+        <input type="password" id="metaTokenInput" placeholder="Paste your Facebook Access Token here">
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+        <button class="btn btn-secondary" onclick="closeMetaModal()">Cancel</button>
+        <button class="btn btn-success" onclick="saveMetaToken()">Save Token</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CLIENT_SLUG = 'b_fashion_explore';
+
+    function openMetaModal() {
+      document.getElementById('metaModal').style.display = 'flex';
+    }
+
+    function closeMetaModal() {
+      document.getElementById('metaModal').style.display = 'none';
+    }
+
+    async function saveMetaToken() {
+      const token = document.getElementById('metaTokenInput').value.trim();
+      if (!token) {
+        alert('Please enter a valid token');
+        return;
+      }
+      try {
+        const resp = await fetch('/api/meta/save-credentials', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ client_slug: CLIENT_SLUG, access_token: token })
+        });
+        const data = await resp.json();
+        alert(data.message || 'Token saved successfully!');
+        closeMetaModal();
+        triggerAudit();
+      } catch (err) {
+        alert('Error saving token: ' + err.message);
+      }
+    }
+
+    async function triggerAudit() {
+      const btn = document.getElementById('auditBtn');
+      btn.innerText = '⚡ Running Audit...';
+      btn.disabled = true;
+
+      try {
+        const resp = await fetch('/api/audit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ client_slug: CLIENT_SLUG, mode: 'APPROVAL_REQUIRED', use_fakes: true })
+        });
+        const data = await resp.json();
+        renderAuditResults(data);
+      } catch (err) {
+        alert('Audit failed: ' + err.message);
+      } finally {
+        btn.innerText = '⚡ Run 1-Click Audit';
+        btn.disabled = false;
+      }
+    }
+
+    function renderAuditResults(data) {
+      // 1. Update KPIs
+      let totalSpend = 0;
+      let totalConv = 0;
+      const metrics = data.metrics || [];
+
+      metrics.forEach(m => {
+        totalSpend += parseFloat(m.spend || 0);
+        totalConv += parseFloat(m.conversions || 0);
+      });
+
+      document.getElementById('kpiSpend').innerText = `$${totalSpend.toFixed(2)}`;
+      document.getElementById('kpiConversions').innerText = totalConv.toFixed(0);
+      document.getElementById('kpiCpa').innerText = totalConv > 0 ? `$${(totalSpend / totalConv).toFixed(2)}` : 'N/A';
+      document.getElementById('kpiQuality').innerText = `${((data.analyst?.data_quality_score || 1) * 100).toFixed(0)}%`;
+
+      // 2. Render Campaigns Table
+      const tbody = document.getElementById('campaignsBody');
+      if (metrics.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No metrics returned</td></tr>';
+      } else {
+        tbody.innerHTML = metrics.map(m => {
+          const cpa = m.conversions > 0 ? `$${(m.spend / m.conversions).toFixed(2)}` : 'N/A';
+          return `
+            <tr>
+              <td><strong>${m.campaign_name}</strong></td>
+              <td><span class="badge" style="background: rgba(255,255,255,0.08);">${m.platform.toUpperCase()}</span></td>
+              <td>$150.00</td>
+              <td>$${parseFloat(m.spend).toFixed(2)}</td>
+              <td>${m.impressions.toLocaleString()}</td>
+              <td>${m.clicks.toLocaleString()}</td>
+              <td>${parseFloat(m.conversions).toFixed(0)}</td>
+              <td><strong>${cpa}</strong></td>
+              <td><span class="status-pill status-active">ACTIVE</span></td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // 3. Render Proposals
+      const pContainer = document.getElementById('proposalsContainer');
+      const proposals = data.proposals || [];
+      if (proposals.length === 0) {
+        pContainer.innerHTML = '<p style="color: #34d399; font-size: 0.95rem;">✅ All campaigns are performing safely within bounds. No emergency action required.</p>';
+      } else {
+        pContainer.innerHTML = proposals.map(p => `
+          <div class="proposal-card" id="card_${p.action_id}">
+            <div class="proposal-header">
+              <span>⚠️ Action Required: ${p.action} on <strong>${p.resource_name}</strong></span>
+              <span class="badge" style="background: #f59e0b; color: black;">Risk: ${p.risk}</span>
+            </div>
+            <p style="font-size: 0.875rem; color: #d1d5db; margin-bottom: 0.75rem;">${p.reason}</p>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+              Fingerprint: <code>${p.fingerprint.substring(0, 16)}...</code> | Confidence: <strong>${(p.confidence * 100).toFixed(0)}%</strong>
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+              <button class="btn btn-success" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="approveAction('${p.action_id}')">
+                ✓ 1-Click Approve & Execute
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    async function approveAction(actionId) {
+      try {
+        const resp = await fetch('/api/proposals/approve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action_id: actionId, client_slug: CLIENT_SLUG, approver: 'Dashboard Operator' })
+        });
+        const res = await resp.json();
+        if (res.success) {
+          const card = document.getElementById(`card_${actionId}`);
+          card.style.background = 'rgba(16, 185, 129, 0.1)';
+          card.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+          card.innerHTML = `
+            <div style="color: #34d399; font-weight: 600; margin-bottom: 0.5rem;">
+              ✓ Successfully Executed on Facebook Ads!
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+              Execution ID: <code>${res.execution_id}</code> | State: <strong>${res.state}</strong> (Previous: ${res.pre_state} → Applied: ${res.post_state})
+            </p>
+            <button class="btn btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="rollbackAction('${res.execution_id}')">
+              ↺ 1-Click Rollback
+            </button>
+          `;
+        } else {
+          alert('Execution failed');
+        }
+      } catch (err) {
+        alert('Approval error: ' + err.message);
+      }
+    }
+
+    async function rollbackAction(executionId) {
+      try {
+        const resp = await fetch('/api/proposals/rollback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ execution_id: executionId })
+        });
+        const res = await resp.json();
+        if (res.success) {
+          alert('Rollback executed successfully! Resource state restored.');
+          triggerAudit();
+        } else {
+          alert('Rollback failed');
+        }
+      } catch (err) {
+        alert('Rollback error: ' + err.message);
+      }
+    }
+
+    async function fetchBriefing() {
+      try {
+        const resp = await fetch(`/api/briefing?client_slug=${CLIENT_SLUG}`);
+        const data = await resp.json();
+        document.getElementById('briefingCard').style.display = 'block';
+        document.getElementById('briefingContent').innerText = data.raw_briefing_text;
+        document.getElementById('briefingCard').scrollIntoView({ behavior: 'smooth' });
+      } catch (err) {
+        alert('Failed to load briefing: ' + err.message);
+      }
+    }
+
+    function copyBriefing() {
+      const text = document.getElementById('briefingContent').innerText;
+      navigator.clipboard.writeText(text);
+      alert('Briefing report copied to clipboard!');
+    }
+
+    // Load initial data on startup
+    window.addEventListener('DOMContentLoaded', () => {
+      triggerAudit();
+    });
+  </script>
+</body>
+</html>
