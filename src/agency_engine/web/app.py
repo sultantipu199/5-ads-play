@@ -258,6 +258,80 @@ tipu_campaign: dict[str, Any] = {
             "primary_text": "🎬 [Remotion Motion Graphics 9:16 Reel - Tipu Sultan]\nHigh-converting motion creative built with programmatic Remotion video rendering.\nSupercharge your reels & stories CTR with automated video personalization!\n\nTap Send Message to consult directly on WhatsApp or Messenger! 🚀💬",
             "headline": "Tipu Sultan - AI & Data Growth Consultation 💬",
             "call_to_action": "SEND_MESSAGE",
+            "ad_id": "ad_120254903762520536",
+            "ad_name": "Ad 4: Remotion Motion Graphics (9:16 Growth Reel)",
+        },
+    ],
+    "ads": [
+        {
+            "id": "ad_120254903760540536",
+            "name": "Ad 1: Text-Only Direct Messaging (AI Growth & Analytics)",
+            "adset_id": "120254903760540536",
+            "creative_id": "4579539412329267",
+            "status": "PAUSED",
+            "modality": "TEXT_ONLY",
+            "primary_text": "🚀 [Tipu Sultan - AI & Data Growth Architect]\nAre legacy media buying structures suffocating your Meta ad performance in 2026?\n\nEmpower your eCommerce & B2B brand with:\n✅ Server-Side Tracking & Meta Conversions API (CAPI)\n✅ Bulletproof Web Analytics & Server-Side GTM\n✅ Value-Based Bidding (VBB) & First-Party Data Enrichment\n\nDirect Message me on Messenger to audit your tracking setup and unlock scalable ROAS! 💬📊",
+            "headline": "Chat on Messenger with Tipu Sultan 💬",
+            "call_to_action": "SEND_MESSAGE",
+            "destination": "Facebook Messenger (m.me/tipusultan.growth)",
+        },
+        {
+            "id": "ad_120254903761000536",
+            "name": "Ad 2: Single Studio Image (AI & Data Growth Architect)",
+            "adset_id": "120254903761000536",
+            "creative_id": "1887099109119697",
+            "status": "PAUSED",
+            "modality": "SINGLE_IMAGE",
+            "media_url": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1080&q=80",
+            "primary_text": "✨ [Tipu Sultan - AI & Data Growth Architect]\nStop guessing where your ad budget is leaking! Build a high-performance tracking and attribution stack:\n🎯 Meta Conversions API (CAPI) with 9.0+ Event Quality Match\n🎯 First-Party Server-Side GTM on custom subdomains\n🎯 Value-Based Bidding (VBB) & Advanced eCommerce Data Layer\n\nDirect Message me to scale your ad accounts with high-accuracy data! 💬📈",
+            "headline": "ইনবক্সে ফ্রি ট্র্যাকিং অডিট বুক করুন 💬",
+            "call_to_action": "SEND_MESSAGE",
+            "destination": "Facebook Messenger (m.me/tipusultan.growth)",
+        },
+        {
+            "id": "ad_120254903761780536",
+            "name": "Ad 3: Multi-Card Carousel (CAPI, GTM & Value Bidding)",
+            "adset_id": "120254903761780536",
+            "creative_id": "1117140314197725",
+            "status": "PAUSED",
+            "modality": "CAROUSEL",
+            "carousel_cards": [
+                {
+                    "card_index": 1,
+                    "headline": "🎯 Server-Side Tracking & CAPI",
+                    "description": "9.0+ Event Match Quality & Deduplication",
+                    "image_url": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1080&q=80",
+                },
+                {
+                    "card_index": 2,
+                    "headline": "📊 Bulletproof Web Analytics",
+                    "description": "Server-Side GTM & First-Party Data",
+                    "image_url": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1080&q=80",
+                },
+                {
+                    "card_index": 3,
+                    "headline": "🚀 Value-Based Bidding (VBB)",
+                    "description": "Maximize ROAS with High-LTV Optimization",
+                    "image_url": "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=1080&q=80",
+                },
+            ],
+            "primary_text": "📊 [AI & Data-Driven Growth Stack by Tipu Sultan]\nDiscover how we scale eCommerce & B2B brands:\n1️⃣ Server-Side Tracking & Meta CAPI (Deduplication & 9.0+ Match Quality)\n2️⃣ Bulletproof Web Analytics & Server-Side GTM\n3️⃣ Value-Based Bidding (Feed the Meta algorithm with actual high-LTV buyers)\n\nInbox now on Messenger for a free tracking audit! 💬🚀",
+            "headline": "সোয়াইপ করে গ্রোথ স্ট্যাক দেখুন 💬",
+            "call_to_action": "SEND_MESSAGE",
+            "destination": "Advantage+ (Feed + Explore)",
+        },
+        {
+            "id": "ad_120254903762520536",
+            "name": "Ad 4: Remotion Motion Graphics (9:16 Growth Reel)",
+            "adset_id": "120254903762520536",
+            "creative_id": "1181501077872193",
+            "status": "PAUSED",
+            "modality": "REMOTION_VIDEO",
+            "media_url": "/reel-preview.png",
+            "primary_text": "🎬 [Remotion Motion Graphics 9:16 Reel - Tipu Sultan]\nHigh-converting motion creative built with programmatic Remotion video rendering.\nSupercharge your reels & stories CTR with automated video personalization!\n\nTap Send Message to consult directly on WhatsApp or Messenger! 🚀💬",
+            "headline": "Tipu Sultan - AI & Data Growth Consultation 💬",
+            "call_to_action": "SEND_MESSAGE",
+            "destination": "Instagram Reels & Stories (@tipusultan.growth)",
         },
     ],
     "ad_set_id": "120254903760540536",
@@ -609,6 +683,20 @@ async def attach_creative_to_adset(req: AttachCreativeRequest) -> dict[str, Any]
 @app.get("/api/campaigns")
 async def get_campaigns(client_slug: str = "b_fashion_explore") -> dict[str, Any]:
     return {"campaigns": [c for c in managed_campaigns if c.get("client_slug") == client_slug]}
+
+
+class PublishAdsRequest(BaseModel):
+    client_slug: str = "b_fashion_explore"
+    token: str | None = None
+
+
+@app.post("/api/meta/publish-ads")
+async def publish_meta_ads_endpoint(req: PublishAdsRequest) -> dict[str, Any]:
+    import sys
+    sys.path.insert(0, str(BASE_DIR))
+    from scripts.publish_meta_ads import publish_ads
+    res = publish_ads(req.token)
+    return {"success": True, **res}
 
 
 class ToggleCampaignStatusRequest(BaseModel):
