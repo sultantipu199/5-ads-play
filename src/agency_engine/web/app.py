@@ -326,3 +326,10 @@ async def get_briefing(client_slug: str = "b_fashion_explore") -> dict[str, Any]
 async def root() -> FileResponse:
     index_file = STATIC_DIR / "index.html"
     return FileResponse(index_file)
+
+
+@app.get("/connect-token.html")
+async def connect_token_page() -> FileResponse:
+    token_file = STATIC_DIR / "connect-token.html"
+    return FileResponse(token_file)
+
