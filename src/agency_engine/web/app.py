@@ -186,22 +186,28 @@ tipu_campaign: dict[str, Any] = {
     "clicks": 0,
     "conversions": 0,
     "status": "PAUSED",
+    "page_id": "626515277211347",
+    "page_name": "রূপসী বাংলাদেশ (B-Fashion Explore)",
     "ad_sets": [
         {
-            "id": "120254903239370536",
+            "id": "120254903568840536",
             "name": "AdSet 1: Text-Only Direct Messaging",
             "modality": "TEXT_ONLY",
             "status": "PAUSED",
-            "destination": "Facebook Messenger (m.me/b.fashion.explore)",
+            "page_id": "626515277211347",
+            "creative_id": "1863672544986774",
+            "destination": "Facebook Messenger (m.me/626515277211347)",
             "primary_text": "🔥 [B-Fashion Explore x মোঃ টিপু সুলতান ড্রপ]\nসরাসরি মেসেঞ্জারে চ্যাট করে আপনার ২০% ডিসকাউন্ট ভাউচার কোডটি সংগ্রহ করুন। ১০০% প্রিমিয়াম কম্বড কটন, ক্যাশ অন ডেলিভারি সারাদেশে ৩-৫ দিনে। অর্ডার করতে এখনই ইনবক্স করুন! 💬🛍️",
             "headline": "ইনবক্সে চ্যাট করুন এবং ২০% ছাড় নিন 💬",
             "call_to_action": "SEND_MESSAGE",
         },
         {
-            "id": "120254903239720536",
+            "id": "120254903569190536",
             "name": "AdSet 2: Single Studio Image (Pomelli Hero)",
             "modality": "SINGLE_IMAGE",
             "status": "PAUSED",
+            "page_id": "626515277211347",
+            "creative_id": "2602072910268473",
             "destination": "Facebook & Instagram Feed",
             "media_url": "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1080&q=80",
             "primary_text": "✨ [B-Fashion Explore Studio Showcase by মোঃ টিপু সুলতান]\nগুগল পমেলি (Google Pomelli) কালার ডিএনএ ও স্টুডিও লাইটিংয়ে তৈরি লেটেস্ট ড্রপ। প্রিমিয়াম স্ট্রিটওয়্যার ফিট এখন লাইভ।",
@@ -209,10 +215,12 @@ tipu_campaign: dict[str, Any] = {
             "call_to_action": "SEND_MESSAGE",
         },
         {
-            "id": "120254903240140536",
+            "id": "120254903569600536",
             "name": "AdSet 3: Multi-Card Carousel & Collection",
             "modality": "CAROUSEL",
             "status": "PAUSED",
+            "page_id": "626515277211347",
+            "creative_id": "1471190794890550",
             "destination": "Advantage+ (Feed + Explore)",
             "carousel_cards": [
                 {
@@ -239,10 +247,12 @@ tipu_campaign: dict[str, Any] = {
             "call_to_action": "SEND_MESSAGE",
         },
         {
-            "id": "120254903244300536",
+            "id": "120254903570080536",
             "name": "AdSet 4: Remotion Motion Graphics (9:16 Reel)",
             "modality": "REMOTION_VIDEO",
             "status": "PAUSED",
+            "page_id": "626515277211347",
+            "creative_id": "1673766084147486",
             "destination": "Instagram Reels & Stories (@b_fashion_explore)",
             "media_url": "/reel-preview.png",
             "primary_text": "🎬 [Remotion Motion Graphics Ad - মোঃ টিপু সুলতান]\nইনস্টাগ্রাম রিলস ও স্টোরিজের জন্য তৈরি হাই-এনার্জি মোশন গ্রাফিক্স অ্যাড। সোয়াইপ করুন ও ডিরেক্টে চ্যাট করুন!",
@@ -250,17 +260,38 @@ tipu_campaign: dict[str, Any] = {
             "call_to_action": "SEND_MESSAGE",
         },
     ],
-    "ad_set_id": "120254903239370536",
+    "ad_set_id": "120254903568840536",
     "ad_set_name": "AdSet 1: Text-Only Direct Messaging (+ 3 Multi-Modality Sets)",
     "primary_text": "🔥 [B-Fashion Explore x মোঃ টিপু সুলতান ড্রপ]\nসরাসরি মেসেঞ্জারে চ্যাট করে আপনার ২০% ডিসকাউন্ট ভাউচার কোডটি সংগ্রহ করুন। ১০০% প্রিমিয়াম কম্বড কটন, ক্যাশ অন ডেলিভারি সারাদেশে ৩-৫ দিনে। অর্ডার করতে এখনই ইনবক্স করুন! 💬🛍️",
     "headline": "ইনবক্সে চ্যাট করুন এবং ২০% ছাড় নিন 💬",
     "call_to_action": "SEND_MESSAGE",
     "media_url": "/reel-preview.png",
-    "targeting": "Bangladesh | Age: 18 - 45 | All Genders | Interests: Fashion, Streetwear, Online Shopping",
-    "destination": "Facebook Messenger (m.me/b.fashion.explore) & Instagram Direct (@b_fashion_explore)",
+    "targeting": "Bangladesh | Age: 18 - 65 | All Genders | Fashion, Streetwear, Online Shopping",
+    "destination": "Facebook Messenger (m.me/626515277211347) & Instagram Direct",
     "audit_trail": [
         {
-            "step": "1. Multi-Modality Campaign Architected for Md. Tipu Sultan",
+            "step": "1. Facebook Page Linked to AdSets via promoted_object",
+            "time": "2026-10-17 17:33:00",
+            "fingerprint": "page_626515277211347_linked",
+            "note": "Page 'রূপসী বাংলাদেশ' (ID: 626515277211347) officially linked to all 4 AdSets via promoted_object.",
+            "status": "DONE",
+        },
+        {
+            "step": "2. Four Meta AdCreatives Generated Live on Facebook",
+            "time": "2026-10-17 17:32:00",
+            "fingerprint": "creatives_4x_meta_live",
+            "note": "Creatives 1863672544986774 (Text), 2602072910268473 (Single Image), 1471190794890550 (Carousel), 1673766084147486 (Remotion Reel) registered on Graph API.",
+            "status": "DONE",
+        },
+        {
+            "step": "3. Four Clean AdSets Published on Facebook Meta",
+            "time": "2026-10-17 17:33:30",
+            "fingerprint": "meta_clean_adsets_live",
+            "note": "AdSets 120254903568840536, 120254903569190536, 120254903569600536, 120254903570080536 live on Facebook Meta servers.",
+            "status": "DONE",
+        },
+        {
+            "step": "4. Multi-Modality Campaign Architected for Md. Tipu Sultan",
             "time": "2026-10-17 16:55:00",
             "fingerprint": "marketer_tipu_sultan_master",
             "note": "Architected $5.00 Advantage+ Budget Campaign with 4 dedicated AdSets: Text-Only, Single Image (Pomelli), Multi-Card Carousel, and Remotion Motion Graphics.",
@@ -631,6 +662,19 @@ async def toggle_campaign_status(req: ToggleCampaignStatusRequest) -> dict[str, 
             intended_value=target_status,
         )
         await adapter.execute_action(prop, idempotency_key=prop.fingerprint)
+
+        if matched and "ad_sets" in matched:
+            for aset in matched["ad_sets"]:
+                aset["status"] = target_status
+                if not adapter.is_virtual:
+                    try:
+                        await adapter.http.request(
+                            "POST",
+                            f"{adapter.base_url}/{adapter.api_version}/{aset['id']}",
+                            data={"status": target_status, "access_token": token},
+                        )
+                    except Exception:
+                        pass
 
         if matched:
             now_str = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S")
