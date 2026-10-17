@@ -174,8 +174,8 @@ async def run_audit(req: AuditRequest) -> dict[str, Any]:
         except Exception:
             has_token = False
 
+    adapters: list[Any] = []
     if has_token:
-        adapters = []
         for p_name, p_cfg in c.platforms.items():
             if p_cfg.enabled:
                 adap = get_platform_adapter(
@@ -211,16 +211,17 @@ async def run_audit(req: AuditRequest) -> dict[str, Any]:
 
     coordinator = CoordinatorAgent(autonomy_mode=autonomy_mode)
     decisions = []
-    for prop in mb_out.proposals:
-        active_proposals[prop.action_id] = prop
-        adap_match = next((a for a, _ in adapters if a.platform_name == prop.platform), adapters[0][0])
-        acc_id = c.platforms[prop.platform.value].account_id
-        decision = await coordinator.evaluate_proposal_consensus(
-            proposal=prop,
-            platform_adapter=adap_match,
-            account_id=acc_id,
-        )
-        decisions.append(decision.model_dump())
+    if adapters and mb_out.proposals:
+        for prop in mb_out.proposals:
+            active_proposals[prop.action_id] = prop
+            adap_match = next((a for a, _ in adapters if a.platform_name == prop.platform), adapters[0][0])
+            acc_id = c.platforms[prop.platform.value].account_id
+            decision = await coordinator.evaluate_proposal_consensus(
+                proposal=prop,
+                platform_adapter=adap_match,
+                account_id=acc_id,
+            )
+            decisions.append(decision.model_dump())
 
     return {
         "client": req.client_slug,
