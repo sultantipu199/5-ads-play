@@ -172,9 +172,135 @@ demo_campaign = {
     ],
 }
 
-# In-memory managed campaigns registry for UI synchronization
-managed_campaigns: list[dict[str, Any]] = [demo_campaign]
+tipu_campaign_id = "120254903238940536"
+tipu_campaign: dict[str, Any] = {
+    "id": tipu_campaign_id,
+    "client_slug": "b_fashion_explore",
+    "marketer_name": "Md. Tipu Sultan (মোঃ টিপু সুলতান)",
+    "name": "B-Fashion VIP - Md. Tipu Sultan ($5 Advantage+ Campaign)",
+    "objective": "OUTCOME_ENGAGEMENT",
+    "placement": "ALL",
+    "budget": "5.00",
+    "spend": "0.00",
+    "impressions": 0,
+    "clicks": 0,
+    "conversions": 0,
+    "status": "PAUSED",
+    "ad_sets": [
+        {
+            "id": "120254903239370536",
+            "name": "AdSet 1: Text-Only Direct Messaging",
+            "modality": "TEXT_ONLY",
+            "status": "PAUSED",
+            "destination": "Facebook Messenger (m.me/b.fashion.explore)",
+            "primary_text": "🔥 [B-Fashion Explore x মোঃ টিপু সুলতান ড্রপ]\nসরাসরি মেসেঞ্জারে চ্যাট করে আপনার ২০% ডিসকাউন্ট ভাউচার কোডটি সংগ্রহ করুন। ১০০% প্রিমিয়াম কম্বড কটন, ক্যাশ অন ডেলিভারি সারাদেশে ৩-৫ দিনে। অর্ডার করতে এখনই ইনবক্স করুন! 💬🛍️",
+            "headline": "ইনবক্সে চ্যাট করুন এবং ২০% ছাড় নিন 💬",
+            "call_to_action": "SEND_MESSAGE",
+        },
+        {
+            "id": "120254903239720536",
+            "name": "AdSet 2: Single Studio Image (Pomelli Hero)",
+            "modality": "SINGLE_IMAGE",
+            "status": "PAUSED",
+            "destination": "Facebook & Instagram Feed",
+            "media_url": "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1080&q=80",
+            "primary_text": "✨ [B-Fashion Explore Studio Showcase by মোঃ টিপু সুলতান]\nগুগল পমেলি (Google Pomelli) কালার ডিএনএ ও স্টুডিও লাইটিংয়ে তৈরি লেটেস্ট ড্রপ। প্রিমিয়াম স্ট্রিটওয়্যার ফিট এখন লাইভ।",
+            "headline": "অর্ডার করতে ইনবক্স করুন (২০% ছাড়) 💬",
+            "call_to_action": "SEND_MESSAGE",
+        },
+        {
+            "id": "120254903240140536",
+            "name": "AdSet 3: Multi-Card Carousel & Collection",
+            "modality": "CAROUSEL",
+            "status": "PAUSED",
+            "destination": "Advantage+ (Feed + Explore)",
+            "carousel_cards": [
+                {
+                    "card_index": 1,
+                    "headline": "🔥 নতুন কালেকশন ২০% ছাড়",
+                    "description": "Drop-Shoulder Streetwear",
+                    "image_url": "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1080&q=80",
+                },
+                {
+                    "card_index": 2,
+                    "headline": "✨ প্রিমিয়াম স্টুডিও লুক",
+                    "description": "100% Breathable Cotton",
+                    "image_url": "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1080&q=80",
+                },
+                {
+                    "card_index": 3,
+                    "headline": "🛍️ ক্যাশ অন ডেলিভারি",
+                    "description": "Nationwide Express Shipping",
+                    "image_url": "https://images.unsplash.com/photo-1445205170230-053b83016050?w=1080&q=80",
+                },
+            ],
+            "primary_text": "🔥 B-Fashion VIP ক্যারোজল কালেকশন ড্রপ! প্রতিটি স্লাইডে আলাদা অফার দেখতে সোয়াইপ করুন এবং মেসেঞ্জারে অর্ডার করুন।",
+            "headline": "সোয়াইপ করে অফার বেছে নিন 💬",
+            "call_to_action": "SEND_MESSAGE",
+        },
+        {
+            "id": "120254903244300536",
+            "name": "AdSet 4: Remotion Motion Graphics (9:16 Reel)",
+            "modality": "REMOTION_VIDEO",
+            "status": "PAUSED",
+            "destination": "Instagram Reels & Stories (@b_fashion_explore)",
+            "media_url": "/reel-preview.png",
+            "primary_text": "🎬 [Remotion Motion Graphics Ad - মোঃ টিপু সুলতান]\nইনস্টাগ্রাম রিলস ও স্টোরিজের জন্য তৈরি হাই-এনার্জি মোশন গ্রাফিক্স অ্যাড। সোয়াইপ করুন ও ডিরেক্টে চ্যাট করুন!",
+            "headline": "B-Fashion VIP Drop-Shoulder (FLAT 20% OFF) 💬",
+            "call_to_action": "SEND_MESSAGE",
+        },
+    ],
+    "ad_set_id": "120254903239370536",
+    "ad_set_name": "AdSet 1: Text-Only Direct Messaging (+ 3 Multi-Modality Sets)",
+    "primary_text": "🔥 [B-Fashion Explore x মোঃ টিপু সুলতান ড্রপ]\nসরাসরি মেসেঞ্জারে চ্যাট করে আপনার ২০% ডিসকাউন্ট ভাউচার কোডটি সংগ্রহ করুন। ১০০% প্রিমিয়াম কম্বড কটন, ক্যাশ অন ডেলিভারি সারাদেশে ৩-৫ দিনে। অর্ডার করতে এখনই ইনবক্স করুন! 💬🛍️",
+    "headline": "ইনবক্সে চ্যাট করুন এবং ২০% ছাড় নিন 💬",
+    "call_to_action": "SEND_MESSAGE",
+    "media_url": "/reel-preview.png",
+    "targeting": "Bangladesh | Age: 18 - 45 | All Genders | Interests: Fashion, Streetwear, Online Shopping",
+    "destination": "Facebook Messenger (m.me/b.fashion.explore) & Instagram Direct (@b_fashion_explore)",
+    "audit_trail": [
+        {
+            "step": "1. Multi-Modality Campaign Architected for Md. Tipu Sultan",
+            "time": "2026-10-17 16:55:00",
+            "fingerprint": "marketer_tipu_sultan_master",
+            "note": "Architected $5.00 Advantage+ Budget Campaign with 4 dedicated AdSets: Text-Only, Single Image (Pomelli), Multi-Card Carousel, and Remotion Motion Graphics.",
+            "status": "DONE",
+        },
+        {
+            "step": "2. Real Campaign Published to Meta Ads Manager",
+            "time": "2026-10-17 16:55:50",
+            "fingerprint": "120254903238940536",
+            "note": "Campaign ID 120254903238940536 live on Facebook Meta servers with $5.00 daily budget.",
+            "status": "DONE",
+        },
+        {
+            "step": "3. Four Real Ad Sets Published to Meta Ads Manager",
+            "time": "2026-10-17 16:56:00",
+            "fingerprint": "meta_adsets_live_4x",
+            "note": "AdSets 120254903239370536, 120254903239720536, 120254903240140536, 120254903244300536 live on Facebook Meta servers.",
+            "status": "DONE",
+        },
+        {
+            "step": "4. Initial Safety State Enforced (PAUSED)",
+            "time": "2026-10-17 16:56:10",
+            "fingerprint": "safety_paused_guard_cbo",
+            "note": "Campaign and all 4 Ad Sets set to PAUSED to prevent unreviewed ad spend until operator toggles Run.",
+            "status": "EXECUTED",
+        },
+    ],
+}
 
+# In-memory managed campaigns registry for UI synchronization
+managed_campaigns: list[dict[str, Any]] = [tipu_campaign, demo_campaign]
+
+_virtual_meta_store[tipu_campaign_id] = {
+    "id": tipu_campaign_id,
+    "name": tipu_campaign["name"],
+    "objective": tipu_campaign["objective"],
+    "status": tipu_campaign["status"],
+    "daily_budget": 500,
+    "placement": tipu_campaign["placement"],
+}
 _virtual_meta_store[demo_campaign_id] = {
     "id": demo_campaign_id,
     "name": demo_campaign["name"],
@@ -183,6 +309,7 @@ _virtual_meta_store[demo_campaign_id] = {
     "daily_budget": 1500,
     "placement": demo_campaign["placement"],
 }
+
 
 
 @app.post("/api/meta/generate-virtual-token")
@@ -853,3 +980,14 @@ async def root() -> FileResponse:
 async def connect_token_page() -> FileResponse:
     token_file = STATIC_DIR / "connect-token.html"
     return FileResponse(token_file)
+
+
+@app.get("/reel-preview.png")
+async def reel_preview() -> FileResponse:
+    return FileResponse(STATIC_DIR / "reel-preview.png")
+
+
+@app.get("/feed-preview.png")
+async def feed_preview() -> FileResponse:
+    return FileResponse(STATIC_DIR / "feed-preview.png")
+
