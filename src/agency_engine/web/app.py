@@ -28,6 +28,7 @@ from agency_engine.creative import (
     DriveAssetIngestor,
     GooglePomelliEngine,
     PomelliPhotoshootConfig,
+    RemotionVideoEngine,
 )
 from agency_engine.domain.enums import AutonomyMode, PlatformName
 from agency_engine.domain.models import ActionProposal
@@ -207,6 +208,7 @@ async def generate_virtual_token(client_slug: str = "b_fashion_explore") -> dict
 ai_studio = AICreativeStudio()
 drive_ingestor = DriveAssetIngestor()
 pomelli_engine = GooglePomelliEngine()
+remotion_engine = RemotionVideoEngine()
 
 initial_pomelli_assets = pomelli_engine.generate_campaign_pack(
     PomelliPhotoshootConfig(
@@ -219,16 +221,81 @@ initial_pomelli_assets = pomelli_engine.generate_campaign_pack(
 )
 initial_carousel = ai_studio.generate_carousel_suite(theme="VIP Drop 20% Off", language="bn")
 initial_single = ai_studio.generate_single_image_ad(theme="Festive Streetwear", language="bn")
+initial_remotion_reel = remotion_engine.create_video_ad_asset(
+    composition_id="VerticalReelAd",
+    product_title="VIP Drop-Shoulder Streetwear",
+    headline="🔥 VIP COLLECTION DROP",
+    discount_text="FLAT 20% OFF",
+    language="bn",
+)
+initial_remotion_square = remotion_engine.create_video_ad_asset(
+    composition_id="SquareFeedAd",
+    product_title="Contemporary Streetwear Edit",
+    headline="⚡ VIP EXCLUSIVE DROP",
+    discount_text="20% OFF",
+    language="bn",
+)
+
 creative_assets_repo: list[dict[str, Any]] = [
+    initial_remotion_reel.model_dump(),
+    initial_remotion_square.model_dump(),
     *[a.model_dump() for a in initial_pomelli_assets],
     initial_carousel.model_dump(),
     initial_single.model_dump(),
 ]
 
 
+@app.get("/api/creative/remotion/compositions")
+async def get_remotion_compositions() -> dict[str, Any]:
+    return {"compositions": remotion_engine.list_compositions()}
+
+
+class CreateRemotionAdRequest(BaseModel):
+    composition_id: str = "VerticalReelAd"
+    product_title: str = "Luxury Drop-Shoulder Streetwear"
+    headline: str = "🔥 VIP COLLECTION DROP"
+    discount_text: str = "FLAT 20% OFF"
+    cta_text: str = "💬 Send Message to Claim 20% Off"
+    language: str = "bn"
+    primary_color: str = "#0F172A"
+    accent_color: str = "#F59E0B"
+
+
+@app.post("/api/creative/remotion/create-ad")
+async def create_remotion_ad(req: CreateRemotionAdRequest) -> dict[str, Any]:
+    asset = remotion_engine.create_video_ad_asset(
+        composition_id=req.composition_id,
+        product_title=req.product_title,
+        headline=req.headline,
+        discount_text=req.discount_text,
+        cta_text=req.cta_text,
+        language=req.language,
+        primary_color=req.primary_color,
+        accent_color=req.accent_color,
+    )
+    asset_data = asset.model_dump()
+    creative_assets_repo.insert(0, asset_data)
+    return {"success": True, "asset": asset_data}
+
+
+class RenderRemotionRequest(BaseModel):
+    composition_id: str = "VerticalReelAd"
+    output_filename: str = "remotion_ad.mp4"
+
+
+@app.post("/api/creative/remotion/render")
+async def render_remotion_ad(req: RenderRemotionRequest) -> dict[str, Any]:
+    result = remotion_engine.render_composition(
+        composition_id=req.composition_id,
+        output_filename=req.output_filename,
+    )
+    return result
+
+
 @app.get("/api/creative/pomelli/dna")
 async def get_pomelli_business_dna() -> dict[str, Any]:
     return {"dna": pomelli_engine.dna.model_dump()}
+
 
 
 class ExtractDNARequest(BaseModel):

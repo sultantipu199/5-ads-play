@@ -519,12 +519,14 @@
           <a href="https://labs.google/" target="_blank" class="btn btn-secondary" style="font-size: 0.78rem; text-decoration: none; color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);">
             🌐 Google Labs Pomelli ↗
           </a>
+          <button class="btn btn-secondary" style="font-size: 0.78rem; background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;" onclick="openRemotionModal()">🎬 Remotion Video Ads</button>
           <button class="btn btn-secondary" style="font-size: 0.78rem;" onclick="openPomelliPromptsModal()">📋 Pomelli Prompts</button>
           <button class="btn btn-secondary" style="font-size: 0.78rem;" onclick="openDriveIngestModal()">📁 Google Drive Ingest</button>
           <button class="btn btn-secondary" style="font-size: 0.78rem;" onclick="openAICreativeModal()">✨ AI Studio</button>
           <button class="btn btn-success" style="font-size: 0.78rem; background: linear-gradient(135deg, #f59e0b, #10b981);" onclick="openPomelliModal()">⚡ Pomelli Photoshoot Pack</button>
         </div>
       </div>
+
 
       <!-- Google Pomelli Business DNA Card -->
       <div style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(9, 13, 22, 0.9)); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 1.15rem; margin-bottom: 1.25rem;">
@@ -985,14 +987,53 @@ Account is currently clean and ready for first campaign creation.
         <textarea id="promptCarText" rows="3" readonly style="font-size: 0.78rem; font-family: monospace;"></textarea>
       </div>
 
+  <!-- Remotion Motion Graphics Modal -->
+  <div class="modal" id="remotionModal">
+    <div class="modal-content" style="max-width: 620px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <h2 style="font-family: var(--heading-font); font-size: 1.3rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span>🎬</span> Remotion Video Ad Generator
+        </h2>
+        <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">React Motion Graphics</span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">
+        রিমোশন (Remotion) দিয়ে রিঅ্যাক্ট কোডের মাধ্যমে প্রোগ্রাম্যাটিক মোশন গ্রাফিক্স ও হাই-কনভার্সন ভিডিও অ্যাড স্বয়ংক্রিয়ভাবে তৈরি করুন:
+      </p>
+      <div class="form-group">
+        <label>Video Ad Composition &amp; Aspect Ratio</label>
+        <select id="remotionComposition">
+          <option value="VerticalReelAd">📱 9:16 Vertical Reel &amp; Story (1080x1920) - Instagram Reels / Stories</option>
+          <option value="SquareFeedAd">🖼️ 1:1 Square Feed Motion Graphics (1080x1080) - Facebook &amp; Instagram Feed</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Product Title</label>
+        <input type="text" id="remotionProductTitle" value="VIP Drop-Shoulder Streetwear">
+      </div>
+      <div class="form-group">
+        <label>Hook Headline</label>
+        <input type="text" id="remotionHeadline" value="🔥 VIP COLLECTION DROP">
+      </div>
+      <div class="form-group">
+        <label>Discount Badge Text</label>
+        <input type="text" id="remotionDiscountText" value="FLAT 20% OFF">
+      </div>
+      <div class="form-group">
+        <label>Language (ভাষা)</label>
+        <select id="remotionLanguage">
+          <option value="bn">বাংলা (Bengali - High Converting Local Copy)</option>
+          <option value="en">English (International / Premium)</option>
+        </select>
+      </div>
       <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
-        <button class="btn btn-secondary" onclick="closePomelliPromptsModal()">Close</button>
+        <button class="btn btn-secondary" onclick="closeRemotionModal()">Cancel</button>
+        <button class="btn btn-success" id="remotionGenBtn" style="background: linear-gradient(135deg, #ef4444, #f59e0b);" onclick="submitRemotionAd()">🎬 Generate Remotion Video Ad</button>
       </div>
     </div>
   </div>
 
-
   <script>
+
     const CLIENT_SLUG = 'b_fashion_explore';
     const AD_ACCOUNT_ID = 'act_2665580250239749';
 
@@ -1392,33 +1433,43 @@ Account is currently clean and ready for first campaign creation.
 
       container.innerHTML = creativeAssetsList.map(a => {
         const isCarousel = a.creative_type === 'CAROUSEL';
+        const isVideo = a.creative_type === 'VIDEO' || (a.metadata && a.metadata.tool === 'Remotion');
         const cards = a.carousel_cards || [];
         const previewImg = a.media_url || (cards[0] ? cards[0].image_url : '');
         const meta = a.metadata || {};
         const isPomelli = meta.tool === 'Google Pomelli' || (a.name && a.name.includes('Pomelli'));
         
         let formatBadge = `<span class="badge" style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc;">🖼️ 1:1 Feed</span>`;
-        if (isCarousel) {
+        if (isVideo) {
+          formatBadge = `<span class="badge" style="background: rgba(168, 85, 247, 0.2); color: #c084fc;">📐 ${meta.aspect_ratio || '9:16'} Motion</span>`;
+        } else if (isCarousel) {
           formatBadge = `<span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">🎠 Carousel (${cards.length} Cards)</span>`;
         } else if (meta.aspect_ratio === '9:16') {
           formatBadge = `<span class="badge" style="background: rgba(236, 72, 153, 0.2); color: #f472b6;">📱 9:16 Reels/Stories</span>`;
         }
 
         let sourceBadge = `<span class="badge" style="background: rgba(139, 92, 246, 0.15); color: #c084fc;">✨ AI Studio</span>`;
-        if (isPomelli) {
+        if (isVideo) {
+          sourceBadge = `<span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4);">🎬 Remotion Video</span>`;
+        } else if (isPomelli) {
           sourceBadge = `<span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);">⚡ Google Pomelli</span>`;
         } else if (a.source === 'MANUAL_DRIVE_UPLOAD') {
           sourceBadge = `<span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">📁 Google Drive</span>`;
         }
 
+        const playOverlay = isVideo 
+          ? `<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(239, 68, 68, 0.9); display: flex; align-items: center; justify-content: center; font-size: 1.15rem; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.6); pointer-events: none;">▶</div>` 
+          : '';
+
         return `
-          <div class="ad-card-mockup" style="display: flex; flex-direction: column; justify-content: space-between; border-color: ${isPomelli ? 'rgba(245, 158, 11, 0.3)' : 'var(--card-border)'};">
+          <div class="ad-card-mockup" style="display: flex; flex-direction: column; justify-content: space-between; border-color: ${isVideo ? 'rgba(239, 68, 68, 0.4)' : isPomelli ? 'rgba(245, 158, 11, 0.3)' : 'var(--card-border)'};">
             <div>
-              <div style="padding: 0.85rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; background: ${isPomelli ? 'rgba(245, 158, 11, 0.05)' : 'transparent'};">
+              <div style="padding: 0.85rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; background: ${isVideo ? 'rgba(239, 68, 68, 0.05)' : isPomelli ? 'rgba(245, 158, 11, 0.05)' : 'transparent'};">
                 <div style="font-weight: 600; font-size: 0.88rem; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 170px;">${a.name}</div>
                 <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">${formatBadge}${sourceBadge}</div>
               </div>
               <div style="height: 160px; background-image: url('${previewImg}'); background-size: cover; background-position: center; position: relative;">
+                ${playOverlay}
                 <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.88)); padding: 0.5rem 0.85rem; color: white; font-weight: 600; font-size: 0.82rem;">
                   ${a.headline}
                 </div>
@@ -1437,6 +1488,54 @@ Account is currently clean and ready for first campaign creation.
         `;
       }).join('');
     }
+
+    function openRemotionModal() {
+      document.getElementById('remotionModal').style.display = 'flex';
+    }
+    function closeRemotionModal() {
+      document.getElementById('remotionModal').style.display = 'none';
+    }
+
+    async function submitRemotionAd() {
+      const compId = document.getElementById('remotionComposition').value;
+      const title = document.getElementById('remotionProductTitle').value.trim();
+      const headline = document.getElementById('remotionHeadline').value.trim();
+      const discount = document.getElementById('remotionDiscountText').value.trim();
+      const lang = document.getElementById('remotionLanguage').value;
+      const btn = document.getElementById('remotionGenBtn');
+
+      btn.innerText = '🎬 রিমোশন তৈরি করছে...';
+      btn.disabled = true;
+
+      try {
+        const resp = await fetch('/api/creative/remotion/create-ad', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            composition_id: compId,
+            product_title: title || 'VIP Drop-Shoulder Streetwear',
+            headline: headline || '🔥 VIP COLLECTION DROP',
+            discount_text: discount || 'FLAT 20% OFF',
+            cta_text: '💬 Send Message to Claim 20% Off',
+            language: lang,
+            primary_color: '#0F172A',
+            accent_color: '#F59E0B'
+          })
+        });
+
+        if (resp.ok) {
+          alert('🎉 চমৎকার! Remotion মোশন গ্রাফিক্স ভিডিও অ্যাড সফলভাবে তৈরি হয়েছে!\n\nক্যাটালগ থেকে "🔗 Attach to Ad Set" বাটনে ক্লিক করে সরাসরি Ad Set (120254902743810536)-এ যুক্ত করতে পারেন।');
+          closeRemotionModal();
+          fetchAndRenderCreatives();
+        }
+      } catch (err) {
+        alert('রিমোশন ভিডিও অ্যাড তৈরি ব্যর্থ: ' + err.message);
+      } finally {
+        btn.innerText = '🎬 Generate Remotion Video Ad';
+        btn.disabled = false;
+      }
+    }
+
 
 
     function openDriveIngestModal() {

@@ -83,3 +83,35 @@ def test_ai_creative_studio_bilingual_generation() -> None:
 
     car_en = studio.generate_carousel_suite(language="en")
     assert "20%" in car_en.primary_text
+
+
+def test_remotion_video_engine_list_and_create() -> None:
+    from agency_engine.creative.remotion_engine import RemotionVideoEngine
+
+    engine = RemotionVideoEngine()
+    comps = engine.list_compositions()
+    assert "VerticalReelAd" in comps
+    assert "SquareFeedAd" in comps
+    assert comps["VerticalReelAd"]["dimensions"] == "1080x1920"
+
+    # Test creating 9:16 Vertical Reel Ad Creative Asset
+    reel_asset = engine.create_video_ad_asset(
+        composition_id="VerticalReelAd",
+        product_title="B-Fashion Drop Shoulder",
+        language="bn",
+    )
+    assert reel_asset.creative_type == CreativeType.VIDEO
+    assert reel_asset.metadata["tool"] == "Remotion"
+    assert reel_asset.metadata["aspect_ratio"] == "9:16"
+    assert "reel-preview.png" in reel_asset.media_url
+
+    # Test creating 1:1 Square Feed Ad Creative Asset
+    square_asset = engine.create_video_ad_asset(
+        composition_id="SquareFeedAd",
+        product_title="Streetwear Edit",
+        language="en",
+    )
+    assert square_asset.creative_type == CreativeType.VIDEO
+    assert square_asset.metadata["aspect_ratio"] == "1:1"
+    assert "feed-preview.png" in square_asset.media_url
+

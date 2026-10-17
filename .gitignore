@@ -53,3 +53,10 @@ htmlcov/
 *.db
 data/
 logs/
+
+# Node & Remotion
+node_modules/
+**/node_modules/
+remotion_ads/out/
+remotion_ads/dist/
+
