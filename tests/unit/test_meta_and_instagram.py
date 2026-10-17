@@ -113,7 +113,7 @@ async def test_api_virtual_token_and_status_toggle() -> None:
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         # 1. Generate virtual token
-        tok_resp = await client.post("/api/meta/generate-virtual-token?client_slug=b_fashion_explore")
+        tok_resp = await client.post("/api/meta/generate-virtual-token?client_slug=sandbox_test")
         assert tok_resp.status_code == 200
         tok_data = tok_resp.json()
         assert tok_data["success"] is True
@@ -123,7 +123,7 @@ async def test_api_virtual_token_and_status_toggle() -> None:
         create_resp = await client.post(
             "/api/meta/create-campaign",
             json={
-                "client_slug": "b_fashion_explore",
+                "client_slug": "sandbox_test",
                 "name": "Messages Campaign Test",
                 "objective": "OUTCOME_ENGAGEMENT",
                 "daily_budget_dollars": 15.0,
@@ -138,7 +138,7 @@ async def test_api_virtual_token_and_status_toggle() -> None:
         run_resp = await client.post(
             "/api/campaigns/status",
             json={
-                "client_slug": "b_fashion_explore",
+                "client_slug": "sandbox_test",
                 "campaign_id": c_id,
                 "status": "ACTIVE",
             },
@@ -150,7 +150,7 @@ async def test_api_virtual_token_and_status_toggle() -> None:
         pause_resp = await client.post(
             "/api/campaigns/status",
             json={
-                "client_slug": "b_fashion_explore",
+                "client_slug": "sandbox_test",
                 "campaign_id": c_id,
                 "status": "PAUSED",
             },
