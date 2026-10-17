@@ -106,3 +106,54 @@ async def test_api_meta_create_campaign_endpoint() -> None:
         assert data["success"] is True
         assert data["placement"] == "INSTAGRAM"
         assert "Campaign 'B-Fashion Summer Drop'" in data["message"]
+
+
+@pytest.mark.asyncio
+async def test_api_virtual_token_and_status_toggle() -> None:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        # 1. Generate virtual token
+        tok_resp = await client.post("/api/meta/generate-virtual-token?client_slug=b_fashion_explore")
+        assert tok_resp.status_code == 200
+        tok_data = tok_resp.json()
+        assert tok_data["success"] is True
+        assert tok_data["token"].startswith("EAA_VIRTUAL_TOKEN")
+
+        # 2. Create campaign via API
+        create_resp = await client.post(
+            "/api/meta/create-campaign",
+            json={
+                "client_slug": "b_fashion_explore",
+                "name": "Messages Campaign Test",
+                "objective": "OUTCOME_ENGAGEMENT",
+                "daily_budget_dollars": 15.0,
+                "placement": "ALL",
+                "use_fakes": False,
+            },
+        )
+        assert create_resp.status_code == 200
+        c_id = create_resp.json()["data"]["id"]
+
+        # 3. Toggle Status to ACTIVE (Run)
+        run_resp = await client.post(
+            "/api/campaigns/status",
+            json={
+                "client_slug": "b_fashion_explore",
+                "campaign_id": c_id,
+                "status": "ACTIVE",
+            },
+        )
+        assert run_resp.status_code == 200
+        assert run_resp.json()["status"] == "ACTIVE"
+
+        # 4. Toggle Status to PAUSED (Pause)
+        pause_resp = await client.post(
+            "/api/campaigns/status",
+            json={
+                "client_slug": "b_fashion_explore",
+                "campaign_id": c_id,
+                "status": "PAUSED",
+            },
+        )
+        assert pause_resp.status_code == 200
+        assert pause_resp.json()["status"] == "PAUSED"

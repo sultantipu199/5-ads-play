@@ -52,6 +52,19 @@ def load_settings(base_dir: Path | None = None) -> Settings:
     if base_dir is None:
         base_dir = Path(__file__).resolve().parent.parent.parent
 
+    # Auto-load .env file into os.environ
+    env_file = base_dir / ".env"
+    if env_file.exists():
+        with open(env_file, encoding="utf-8") as f:
+            for line in f:
+                sline = line.strip()
+                if sline and not sline.startswith("#") and "=" in sline:
+                    k, v = sline.split("=", 1)
+                    k = k.strip()
+                    v = v.strip().strip('"').strip("'")
+                    if k not in os.environ or not os.environ[k]:
+                        os.environ[k] = v
+
     config_dir = base_dir / "config"
     safety = SafetyPolicy()
     clients: dict[str, ClientConfig] = {}

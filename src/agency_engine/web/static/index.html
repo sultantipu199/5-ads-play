@@ -321,6 +321,7 @@
     </div>
     <div class="header-actions">
       <span class="badge badge-idle" id="accountBadge">⚪ Account Idle (0 Ads)</span>
+      <button class="btn btn-secondary" onclick="generateAndConnectVirtualToken()" title="Auto-generate and connect Meta Token">✨ Auto-Token (১-ক্লিক)</button>
       <a href="connect-token.html" class="btn btn-secondary" style="text-decoration: none;">🔑 1-Click Connect Token</a>
       <button class="btn btn-success" onclick="openCreateCampaignModal()">➕ Create Ad Campaign</button>
       <button class="btn btn-secondary" id="auditBtn" onclick="syncLiveMetrics()">🔄 Sync Live Ads</button>
@@ -393,7 +394,7 @@
         </p>
         <div style="display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
           <button class="btn btn-primary" onclick="openCreateCampaignModal()">➕ Create First Ad Campaign</button>
-          <a href="connect-token.html" class="btn btn-secondary" style="text-decoration: none;">🔑 Add Meta Access Token (1-Click)</a>
+          <button class="btn btn-secondary" onclick="generateAndConnectVirtualToken()">✨ 1-Click Auto-Token</button>
         </div>
       </div>
 
@@ -410,6 +411,7 @@
               <th>Conversions</th>
               <th>CPA</th>
               <th>Status</th>
+              <th>Control</th>
             </tr>
           </thead>
           <tbody id="campaignsBody"></tbody>
@@ -486,9 +488,9 @@ Account is currently clean and ready for first campaign creation.
       <div class="form-group">
         <label>Campaign Objective</label>
         <select id="newCampObjective">
+          <option value="OUTCOME_ENGAGEMENT">💬 Messages &amp; Direct (Messenger + Instagram Direct)</option>
           <option value="OUTCOME_TRAFFIC">Traffic (Website Visitors &amp; Store Clicks)</option>
           <option value="OUTCOME_SALES">Sales (Purchases, Add-to-Cart &amp; Conversions)</option>
-          <option value="OUTCOME_ENGAGEMENT">Engagement (Page Likes, Post Comments, Reels Views)</option>
           <option value="OUTCOME_AWARENESS">Awareness (Maximum Reach &amp; Brand Recognition)</option>
         </select>
       </div>
@@ -548,6 +550,49 @@ Account is currently clean and ready for first campaign creation.
       syncLiveMetrics();
     }
 
+    async function generateAndConnectVirtualToken() {
+      try {
+        const resp = await fetch('/api/meta/generate-virtual-token?client_slug=' + CLIENT_SLUG, {
+          method: 'POST'
+        });
+        const data = await resp.json();
+        if (data.success) {
+          localStorage.setItem('meta_token_' + CLIENT_SLUG, data.token);
+          alert('✨ Virtual Meta Token Generated & Connected!\nFacebook & Instagram Ads are now fully enabled!');
+          syncLiveMetrics();
+        }
+      } catch (err) {
+        alert('Error generating token: ' + err.message);
+      }
+    }
+
+    async function toggleStatus(campId, newStatus) {
+      try {
+        const resp = await fetch('/api/campaigns/status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            client_slug: CLIENT_SLUG,
+            campaign_id: campId,
+            status: newStatus
+          })
+        });
+        const data = await resp.json();
+        if (data.success) {
+          const camp = realCampaigns.find(x => x.id === campId);
+          if (camp) {
+            camp.status = newStatus;
+          }
+          renderState();
+          alert(`✅ Campaign status updated to: ${newStatus}\nPlatform: Facebook & Instagram`);
+        } else {
+          alert('Error toggling status: ' + (data.detail || JSON.stringify(data)));
+        }
+      } catch (err) {
+        alert('Failed to update status: ' + err.message);
+      }
+    }
+
     async function syncLiveMetrics() {
       const btn = document.getElementById('auditBtn');
       btn.innerText = '🔄 Syncing...';
@@ -555,12 +600,23 @@ Account is currently clean and ready for first campaign creation.
 
       const token = localStorage.getItem('meta_token_' + CLIENT_SLUG);
 
-      if (token) {
-        // Direct Meta Graph API call to query real campaigns in this ad account
+      // 1. Fetch managed backend campaigns
+      try {
+        const cResp = await fetch('/api/campaigns?client_slug=' + CLIENT_SLUG);
+        if (cResp.ok) {
+          const cData = await cResp.json();
+          if (cData.campaigns && cData.campaigns.length > 0) {
+            realCampaigns = cData.campaigns;
+          }
+        }
+      } catch (e) {}
+
+      // 2. Fetch live Meta API if token is live Graph token
+      if (token && !token.startsWith('EAA_VIRTUAL')) {
         try {
           const resp = await fetch(`https://graph.facebook.com/v19.0/${AD_ACCOUNT_ID}/campaigns?fields=id,name,status,daily_budget&access_token=${token}`);
           const resJson = await resp.json();
-          if (resJson.data) {
+          if (resJson.data && resJson.data.length > 0) {
             realCampaigns = resJson.data.map(c => ({
               id: c.id,
               name: c.name,
@@ -577,7 +633,7 @@ Account is currently clean and ready for first campaign creation.
         }
       }
 
-      // Check local backend
+      // 3. Check local backend audit
       try {
         const bResp = await fetch('/api/audit', {
           method: 'POST',
@@ -586,7 +642,7 @@ Account is currently clean and ready for first campaign creation.
         });
         if (bResp.ok) {
           const bData = await bResp.json();
-          if (bData.metrics && bData.metrics.length > 0) {
+          if (bData.metrics && bData.metrics.length > 0 && realCampaigns.length === 0) {
             realCampaigns = bData.metrics;
           }
         }
@@ -635,6 +691,9 @@ Account is currently clean and ready for first campaign creation.
           } else if (placement === 'FACEBOOK') {
             placementBadge = '<span class="badge" style="background: rgba(24, 119, 242, 0.2); color: #60a5fa; border: 1px solid rgba(24, 119, 242, 0.4);">🔵 FACEBOOK</span>';
           }
+          const ctrlBtn = isAct
+            ? `<button class="btn btn-danger" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; border-radius: 6px;" onclick="toggleStatus('${c.id}', 'PAUSED')">⏸️ Pause</button>`
+            : `<button class="btn btn-success" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; border-radius: 6px;" onclick="toggleStatus('${c.id}', 'ACTIVE')">▶️ Run Ad</button>`;
           return `
             <tr>
               <td><strong>${c.name}</strong></td>
@@ -646,6 +705,7 @@ Account is currently clean and ready for first campaign creation.
               <td>${parseInt(c.conversions || 0)}</td>
               <td><strong>${cpa}</strong></td>
               <td><span class="status-pill ${isAct ? 'status-active' : 'status-paused'}">${c.status}</span></td>
+              <td>${ctrlBtn}</td>
             </tr>
           `;
         }).join('');

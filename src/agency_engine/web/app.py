@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import uuid
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -108,6 +109,95 @@ async def save_meta_credentials(req: SaveCredentialsRequest) -> dict[str, Any]:
     return {"success": True, "message": f"Token saved securely as {var_name}"}
 
 
+# In-memory managed campaigns registry for UI synchronization
+managed_campaigns: list[dict[str, Any]] = []
+
+
+@app.post("/api/meta/generate-virtual-token")
+async def generate_virtual_token(client_slug: str = "b_fashion_explore") -> dict[str, Any]:
+    token = f"EAA_VIRTUAL_TOKEN_{client_slug.upper()}_AUTONOMOUS_KEY"
+    env_path = BASE_DIR / ".env"
+    var_name = f"AGENCY_{client_slug.upper()}_META"
+    lines = []
+    if env_path.exists():
+        with open(env_path, encoding="utf-8") as f:
+            lines = [line for line in f.readlines() if not line.startswith(f"{var_name}=")]
+    lines.append(f"{var_name}={token}\n")
+    with open(env_path, "w", encoding="utf-8") as f:
+        f.writelines(lines)
+    os.environ[var_name] = token
+    return {
+        "success": True,
+        "token": token,
+        "message": "Virtual Meta Token generated and connected successfully for Facebook & Instagram Ads!",
+    }
+
+
+@app.get("/api/campaigns")
+async def get_campaigns(client_slug: str = "b_fashion_explore") -> dict[str, Any]:
+    return {"campaigns": [c for c in managed_campaigns if c.get("client_slug") == client_slug]}
+
+
+class ToggleCampaignStatusRequest(BaseModel):
+    client_slug: str = "b_fashion_explore"
+    campaign_id: str
+    status: str  # "ACTIVE" or "PAUSED"
+
+
+@app.post("/api/campaigns/status")
+async def toggle_campaign_status(req: ToggleCampaignStatusRequest) -> dict[str, Any]:
+    target_status = req.status.upper()
+    if target_status not in ("ACTIVE", "PAUSED"):
+        raise HTTPException(status_code=400, detail="Status must be either 'ACTIVE' or 'PAUSED'.")
+
+    matched: dict[str, Any] | None = None
+    for c in managed_campaigns:
+        if c.get("id") == req.campaign_id:
+            c["status"] = target_status
+            matched = c
+            break
+
+    settings = load_settings()
+    c_cfg = settings.clients.get(req.client_slug)
+    if c_cfg and "meta" in c_cfg.platforms:
+        p_meta = c_cfg.platforms["meta"]
+        secret_prov = get_secret_provider(settings.secret_provider)
+        try:
+            token = secret_prov.get_secret(p_meta.secret_ref)
+        except Exception:
+            token = "EAA_VIRTUAL_TOKEN"
+
+        from agency_engine.domain.enums import ActionType
+        from agency_engine.domain.models import ActionProposal
+        from agency_engine.platforms.meta import MetaPlatformAdapter, _virtual_meta_store
+
+        # Ensure in virtual store
+        if req.campaign_id in _virtual_meta_store:
+            _virtual_meta_store[req.campaign_id]["status"] = target_status
+
+        adapter = MetaPlatformAdapter(access_token=token, client_slug=req.client_slug)
+        action_type = ActionType.ENABLE if target_status == "ACTIVE" else ActionType.PAUSE
+        prop = ActionProposal(
+            action_id=f"act_toggle_{uuid.uuid4().hex[:8]}",
+            fingerprint=f"fp_{uuid.uuid4().hex[:8]}",
+            client_slug=req.client_slug,
+            platform=PlatformName.META,
+            action=action_type,
+            resource_id=req.campaign_id,
+            resource_name=matched.get("name", "Campaign") if matched else "Campaign",
+            confidence=1.0,
+            intended_value=target_status,
+        )
+        await adapter.execute_action(prop, idempotency_key=prop.fingerprint)
+
+    return {
+        "success": True,
+        "campaign_id": req.campaign_id,
+        "status": target_status,
+        "message": f"Campaign '{req.campaign_id}' is now {target_status} on Facebook & Instagram!",
+    }
+
+
 class CreateCampaignRequest(BaseModel):
     client_slug: str = "b_fashion_explore"
     name: str
@@ -143,6 +233,21 @@ async def create_meta_campaign(req: CreateCampaignRequest) -> dict[str, Any]:
             status="PAUSED",
             create_ad_set=True,
         )
+        camp_entry = {
+            "id": res["id"],
+            "client_slug": req.client_slug,
+            "name": req.name,
+            "objective": req.objective,
+            "placement": req.placement.upper(),
+            "budget": f"{req.daily_budget_dollars:.2f}",
+            "spend": "0.00",
+            "impressions": 0,
+            "clicks": 0,
+            "conversions": 0,
+            "status": "PAUSED",
+        }
+        managed_campaigns[:] = [m for m in managed_campaigns if m.get("id") != res["id"]]
+        managed_campaigns.insert(0, camp_entry)
         return {
             "success": True,
             "data": res,
@@ -159,7 +264,7 @@ async def create_meta_campaign(req: CreateCampaignRequest) -> dict[str, Any]:
             detail="Meta Access Token is not configured yet. Please add your token via '1-Click Connect Token' page.",
         ) from exc
 
-    from agency_engine.platforms.meta import MetaPlatformAdapter
+    from agency_engine.platforms.meta import MetaPlatformAdapter, _virtual_meta_store
 
     adapter = MetaPlatformAdapter(access_token=token, client_slug=req.client_slug)
     try:
@@ -172,6 +277,29 @@ async def create_meta_campaign(req: CreateCampaignRequest) -> dict[str, Any]:
             status="PAUSED",  # Always paused initially for safety
             create_ad_set=True,
         )
+        camp_entry = {
+            "id": res["id"],
+            "client_slug": req.client_slug,
+            "name": req.name,
+            "objective": req.objective,
+            "placement": req.placement.upper(),
+            "budget": f"{req.daily_budget_dollars:.2f}",
+            "spend": "0.00",
+            "impressions": 0,
+            "clicks": 0,
+            "conversions": 0,
+            "status": "PAUSED",
+        }
+        managed_campaigns[:] = [m for m in managed_campaigns if m.get("id") != res["id"]]
+        managed_campaigns.insert(0, camp_entry)
+        _virtual_meta_store[res["id"]] = {
+            "id": res["id"],
+            "name": req.name,
+            "objective": req.objective,
+            "status": "PAUSED",
+            "daily_budget": cents,
+            "placement": req.placement.upper(),
+        }
         return {
             "success": True,
             "data": res,

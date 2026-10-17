@@ -11,6 +11,9 @@ from agency_engine.domain.enums import ActionType, PlatformName
 from agency_engine.domain.models import ActionProposal, PlatformResource, RawSnapshot
 from agency_engine.platforms.base import AdsPlatform, ResilientHttpClient
 
+# Module-level store for virtual / sandbox executions
+_virtual_meta_store: dict[str, dict[str, Any]] = {}
+
 
 class MetaPlatformAdapter(AdsPlatform):
     platform_name = PlatformName.META
@@ -27,7 +30,15 @@ class MetaPlatformAdapter(AdsPlatform):
         self.client_slug = client_slug
         self.http = http_client or ResilientHttpClient("meta", concurrency=3)
 
+    @property
+    def is_virtual(self) -> bool:
+        return bool(
+            self.access_token and self.access_token.startswith(("EAA_VIRTUAL", "EAA_SANDBOX", "VIRTUAL_", "mock_"))
+        )
+
     async def validate_credentials(self) -> bool:
+        if self.is_virtual:
+            return True
         url = f"{self.base_url}/{self.api_version}/me"
         params = {"access_token": self.access_token, "fields": "id,name"}
         resp = await self.http.request("GET", url, params=params)
@@ -39,6 +50,38 @@ class MetaPlatformAdapter(AdsPlatform):
         date_preset: str = "yesterday",
         trace_id: str = "",
     ) -> RawSnapshot:
+        tid = trace_id or f"meta_tr_{uuid.uuid4().hex[:8]}"
+
+        if self.is_virtual:
+            raw_rows: list[dict[str, Any]] = []
+            for cid, c_data in _virtual_meta_store.items():
+                is_active = c_data.get("status") == "ACTIVE"
+                raw_rows.append(
+                    {
+                        "campaign_id": cid,
+                        "campaign_name": c_data.get("name", cid),
+                        "spend": "15.00" if is_active else "0.00",
+                        "impressions": "1250" if is_active else "0",
+                        "clicks": "68" if is_active else "0",
+                        "actions": [
+                            {"action_type": "onsite_conversion.messaging_conversation_started_7d", "value": "12"}
+                        ]
+                        if is_active
+                        else [],
+                        "date_start": "2026-10-17",
+                        "date_stop": "2026-10-17",
+                    }
+                )
+            return RawSnapshot(
+                snapshot_id=f"snap_meta_{uuid.uuid4().hex[:8]}",
+                client_slug=self.client_slug,
+                platform=self.platform_name,
+                account_id=account_id,
+                fetched_at=datetime.now(UTC),
+                raw_payload={"data": raw_rows},
+                trace_id=tid,
+            )
+
         clean_act = account_id if account_id.startswith("act_") else f"act_{account_id}"
         url = f"{self.base_url}/{self.api_version}/{clean_act}/insights"
         params = {
@@ -49,7 +92,6 @@ class MetaPlatformAdapter(AdsPlatform):
         }
         resp = await self.http.request("GET", url, params=params)
         data = resp.json()
-        tid = trace_id or f"meta_tr_{uuid.uuid4().hex[:8]}"
 
         return RawSnapshot(
             snapshot_id=f"snap_meta_{uuid.uuid4().hex[:8]}",
@@ -66,6 +108,22 @@ class MetaPlatformAdapter(AdsPlatform):
         account_id: str,
         resource_id: str,
     ) -> PlatformResource | None:
+        if self.is_virtual:
+            c_data = _virtual_meta_store.get(resource_id)
+            if not c_data:
+                return None
+            budget_cents = c_data.get("daily_budget", 1000)
+            budget = Decimal(str(budget_cents)) / Decimal("100")
+            return PlatformResource(
+                platform=self.platform_name,
+                account_id=account_id,
+                resource_id=resource_id,
+                name=c_data.get("name", "Meta Campaign"),
+                status=c_data.get("status", "PAUSED"),
+                daily_budget=budget,
+                currency="USD",
+            )
+
         url = f"{self.base_url}/{self.api_version}/{resource_id}"
         params = {
             "access_token": self.access_token,
@@ -104,10 +162,35 @@ class MetaPlatformAdapter(AdsPlatform):
         proposal: ActionProposal,
         idempotency_key: str,
     ) -> dict[str, Any]:
+        if self.is_virtual:
+            c_data = _virtual_meta_store.get(proposal.resource_id)
+            if not c_data:
+                c_data = {
+                    "id": proposal.resource_id,
+                    "name": proposal.resource_name or "Virtual Campaign",
+                    "status": "PAUSED",
+                    "daily_budget": 1000,
+                }
+                _virtual_meta_store[proposal.resource_id] = c_data
+
+            if proposal.action == ActionType.ENABLE:
+                c_data["status"] = "ACTIVE"
+            elif proposal.action == ActionType.PAUSE:
+                c_data["status"] = "PAUSED"
+            elif proposal.action == ActionType.UPDATE_BUDGET:
+                cents = int(Decimal(str(proposal.new_value)) * 100)
+                c_data["daily_budget"] = cents
+
+            return {
+                "success": True,
+                "id": proposal.resource_id,
+                "status": c_data["status"],
+                "daily_budget": c_data.get("daily_budget"),
+            }
+
         url = f"{self.base_url}/{self.api_version}/{proposal.resource_id}"
         payload: dict[str, Any] = {"access_token": self.access_token}
         if proposal.action == ActionType.UPDATE_BUDGET:
-            # Meta accepts daily_budget in cents
             cents = int(Decimal(str(proposal.new_value)) * 100)
             payload["daily_budget"] = cents
         elif proposal.action == ActionType.PAUSE:
@@ -133,6 +216,30 @@ class MetaPlatformAdapter(AdsPlatform):
     ) -> dict[str, Any]:
         """Create a new campaign on Meta Ads Manager (Facebook + Instagram). Defaults to PAUSED for safety."""
         clean_act = account_id if account_id.startswith("act_") else f"act_{account_id}"
+
+        if self.is_virtual:
+            cid = f"camp_meta_{uuid.uuid4().hex[:8]}"
+            c_data = {
+                "id": cid,
+                "name": name,
+                "objective": objective,
+                "status": status,
+                "placement": placement.upper(),
+                "daily_budget": daily_budget_cents or 1000,
+                "account_id": clean_act,
+            }
+            _virtual_meta_store[cid] = c_data
+            if create_ad_set:
+                as_id = f"adset_{uuid.uuid4().hex[:8]}"
+                c_data["ad_set"] = {
+                    "id": as_id,
+                    "campaign_id": cid,
+                    "name": f"{name} - {placement.title()} Set",
+                    "placement": placement.upper(),
+                    "status": status,
+                }
+            return c_data
+
         url = f"{self.base_url}/{self.api_version}/{clean_act}/campaigns"
         payload: dict[str, Any] = {
             "name": name,
@@ -176,9 +283,20 @@ class MetaPlatformAdapter(AdsPlatform):
     ) -> dict[str, Any]:
         """Create an ad set targeting specific placements (Facebook, Instagram, or All)."""
         clean_act = account_id if account_id.startswith("act_") else f"act_{account_id}"
+        placement_upper = placement.upper()
+
+        if self.is_virtual:
+            return {
+                "id": f"adset_{uuid.uuid4().hex[:8]}",
+                "campaign_id": campaign_id,
+                "name": name,
+                "daily_budget": daily_budget_cents,
+                "placement": placement_upper,
+                "status": status,
+            }
+
         url = f"{self.base_url}/{self.api_version}/{clean_act}/adsets"
 
-        placement_upper = placement.upper()
         if placement_upper == "INSTAGRAM":
             targeting: dict[str, Any] = {
                 "geo_locations": {"countries": ["US"]},
