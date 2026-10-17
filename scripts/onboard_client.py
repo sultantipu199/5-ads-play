@@ -3,14 +3,12 @@
 from __future__ import annotations
 
 import asyncio
-import os
 from pathlib import Path
+
 import click
 import yaml
 
-from agency_engine.domain.enums import PlatformName
 from agency_engine.platforms.meta import MetaPlatformAdapter
-from agency_engine.security.secret_provider import EnvSecretProvider
 
 
 @click.command()
@@ -69,7 +67,7 @@ def onboard_meta(
             existing_lines = f.readlines()
 
     # Filter out existing var
-    filtered_lines = [l for l in existing_lines if not l.startswith(f"{secret_var_name}=")]
+    filtered_lines = [line for line in existing_lines if not line.startswith(f"{secret_var_name}=")]
     filtered_lines.append(f"{secret_var_name}={access_token.strip()}\n")
 
     with open(env_path, "w", encoding="utf-8") as f:
@@ -103,9 +101,9 @@ def onboard_meta(
     click.echo(f"  [+] Client '{clean_slug}' successfully onboarded in config/clients.yaml!")
     click.echo("\n" + "=" * 60)
     click.echo("Ready to run! Next commands:")
-    click.echo(f"  1. Live Audit (Read-Only):")
+    click.echo("  1. Live Audit (Read-Only):")
     click.echo(f"     python -m agency_engine.cli audit --client {clean_slug} --mode read_only")
-    click.echo(f"  2. Live Executive Briefing:")
+    click.echo("  2. Live Executive Briefing:")
     click.echo(f"     python -m agency_engine.cli brief --client {clean_slug} --dry-run")
     click.echo("=" * 60 + "\n")
 

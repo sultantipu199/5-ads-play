@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import os
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -24,19 +27,8 @@ from agency_engine.persistence.database import DatabaseManager
 from agency_engine.persistence.repositories import RepositoryManager
 from agency_engine.platforms import get_platform_adapter
 from agency_engine.reporting.briefing import BriefingService
-from agency_engine.reporting.telegram import TelegramNotifier
 from agency_engine.security.secret_provider import get_secret_provider
 from agency_engine.settings import load_settings
-
-app = FastAPI(title="Omnichannel Agency Engine API", version="0.1.0")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 STATIC_DIR = Path(__file__).resolve().parent / "static"
@@ -51,9 +43,21 @@ active_proposals: dict[str, ActionProposal] = {}
 execution_records: dict[str, Any] = {}
 
 
-@app.on_event("startup")
-async def startup() -> None:
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     await db_mgr.init_models()
+    yield
+
+
+app = FastAPI(title="Omnichannel Agency Engine API", version="0.1.0", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/api/status")
@@ -61,13 +65,15 @@ async def get_status() -> dict[str, Any]:
     settings = load_settings()
     clients_summary = []
     for slug, c in settings.clients.items():
-        clients_summary.append({
-            "slug": slug,
-            "name": c.name,
-            "timezone": c.timezone,
-            "currency": c.reporting_currency,
-            "platforms": {p: pcfg.model_dump() for p, pcfg in c.platforms.items()},
-        })
+        clients_summary.append(
+            {
+                "slug": slug,
+                "name": c.name,
+                "timezone": c.timezone,
+                "currency": c.reporting_currency,
+                "platforms": {p: pcfg.model_dump() for p, pcfg in c.platforms.items()},
+            }
+        )
     return {
         "status": "online",
         "default_mode": settings.safety.default_mode,
@@ -93,7 +99,7 @@ async def save_meta_credentials(req: SaveCredentialsRequest) -> dict[str, Any]:
     lines = []
     if env_path.exists():
         with open(env_path, encoding="utf-8") as f:
-            lines = [l for l in f.readlines() if not l.startswith(f"{var_name}=")]
+            lines = [line for line in f.readlines() if not line.startswith(f"{var_name}=")]
     lines.append(f"{var_name}={token}\n")
     with open(env_path, "w", encoding="utf-8") as f:
         f.writelines(lines)
@@ -107,6 +113,8 @@ class CreateCampaignRequest(BaseModel):
     name: str
     objective: str = "OUTCOME_TRAFFIC"
     daily_budget_dollars: float = 10.0
+    placement: str = "ALL"  # ALL (FB + Instagram), INSTAGRAM, FACEBOOK
+    use_fakes: bool = False
 
 
 @app.post("/api/meta/create-campaign")
@@ -120,31 +128,58 @@ async def create_meta_campaign(req: CreateCampaignRequest) -> dict[str, Any]:
     if not p_meta:
         raise HTTPException(status_code=400, detail="Meta platform not configured for client.")
 
+    cents = int(req.daily_budget_dollars * 100)
+
+    if req.use_fakes:
+        from agency_engine.platforms.fakes import FakePlatformAdapter
+
+        fake_adapter = FakePlatformAdapter(platform_name=PlatformName.META, client_slug=req.client_slug)
+        res = await fake_adapter.create_campaign(
+            account_id=p_meta.account_id,
+            name=req.name,
+            objective=req.objective,
+            daily_budget_cents=cents,
+            placement=req.placement,
+            status="PAUSED",
+            create_ad_set=True,
+        )
+        return {
+            "success": True,
+            "data": res,
+            "placement": req.placement.upper(),
+            "message": f"Campaign '{req.name}' successfully simulated on Meta ({req.placement.upper()})!",
+        }
+
     secret_prov = get_secret_provider(settings.secret_provider)
     try:
         token = secret_prov.get_secret(p_meta.secret_ref)
     except Exception as exc:
         raise HTTPException(
             status_code=400,
-            detail="Meta Access Token is not configured yet. Please add your token via 'Facebook Token' button.",
+            detail="Meta Access Token is not configured yet. Please add your token via '1-Click Connect Token' page.",
         ) from exc
 
     from agency_engine.platforms.meta import MetaPlatformAdapter
 
     adapter = MetaPlatformAdapter(access_token=token, client_slug=req.client_slug)
-    cents = int(req.daily_budget_dollars * 100)
     try:
         res = await adapter.create_campaign(
             account_id=p_meta.account_id,
             name=req.name,
             objective=req.objective,
             daily_budget_cents=cents,
+            placement=req.placement,
             status="PAUSED",  # Always paused initially for safety
+            create_ad_set=True,
         )
-        return {"success": True, "data": res, "message": f"Campaign '{req.name}' successfully created (PAUSED for safety)!"}
+        return {
+            "success": True,
+            "data": res,
+            "placement": req.placement.upper(),
+            "message": f"Campaign '{req.name}' ({req.placement.upper()}) successfully created (PAUSED for safety)!",
+        }
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Meta API error: {str(exc)}") from exc
-
 
 
 class AuditRequest(BaseModel):
@@ -200,7 +235,6 @@ async def run_audit(req: AuditRequest) -> dict[str, Any]:
         async with db_mgr.session_factory() as session:
             repo = RepositoryManager(session)
             await repo.save_metrics(metrics)
-
 
     # Multi-Agent Workflow
     analyst = AnalystAgent()
@@ -332,4 +366,3 @@ async def root() -> FileResponse:
 async def connect_token_page() -> FileResponse:
     token_file = STATIC_DIR / "connect-token.html"
     return FileResponse(token_file)
-

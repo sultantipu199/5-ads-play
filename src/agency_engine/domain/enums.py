@@ -11,6 +11,12 @@ class PlatformName(StrEnum):
     SNAPCHAT = "snapchat"
 
 
+class MetaPlacement(StrEnum):
+    ALL = "ALL"  # Advantage+ Placements (Facebook + Instagram)
+    INSTAGRAM = "INSTAGRAM"  # Instagram Only (Reels, Stories, Feed, Explore)
+    FACEBOOK = "FACEBOOK"  # Facebook Only (Feed, Stories, Marketplace)
+
+
 class AutonomyMode(StrEnum):
     READ_ONLY = "READ_ONLY"
     SHADOW = "SHADOW"

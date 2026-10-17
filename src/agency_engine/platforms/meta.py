@@ -128,8 +128,10 @@ class MetaPlatformAdapter(AdsPlatform):
         objective: str = "OUTCOME_TRAFFIC",
         status: str = "PAUSED",
         daily_budget_cents: int | None = None,
+        placement: str = "ALL",  # ALL (FB + Instagram), INSTAGRAM, FACEBOOK
+        create_ad_set: bool = False,
     ) -> dict[str, Any]:
-        """Create a new campaign on Meta Ads Manager (defaults to PAUSED for safety)."""
+        """Create a new campaign on Meta Ads Manager (Facebook + Instagram). Defaults to PAUSED for safety."""
         clean_act = account_id if account_id.startswith("act_") else f"act_{account_id}"
         url = f"{self.base_url}/{self.api_version}/{clean_act}/campaigns"
         payload: dict[str, Any] = {
@@ -144,5 +146,70 @@ class MetaPlatformAdapter(AdsPlatform):
 
         resp = await self.http.request("POST", url, json_data=payload)
         res_data: dict[str, Any] = resp.json()
+        if "id" in res_data:
+            res_data["placement"] = placement
+            if create_ad_set:
+                try:
+                    ad_set = await self.create_ad_set(
+                        account_id=clean_act,
+                        campaign_id=res_data["id"],
+                        name=f"{name} - {placement.title()} Set",
+                        daily_budget_cents=daily_budget_cents or 1000,
+                        placement=placement,
+                        status=status,
+                    )
+                    res_data["ad_set"] = ad_set
+                except Exception as exc:
+                    res_data["ad_set_warning"] = str(exc)
         return res_data
 
+    async def create_ad_set(
+        self,
+        account_id: str,
+        campaign_id: str,
+        name: str,
+        daily_budget_cents: int = 1000,
+        placement: str = "ALL",  # ALL, INSTAGRAM, FACEBOOK
+        optimization_goal: str = "LINK_CLICKS",
+        billing_event: str = "IMPRESSIONS",
+        status: str = "PAUSED",
+    ) -> dict[str, Any]:
+        """Create an ad set targeting specific placements (Facebook, Instagram, or All)."""
+        clean_act = account_id if account_id.startswith("act_") else f"act_{account_id}"
+        url = f"{self.base_url}/{self.api_version}/{clean_act}/adsets"
+
+        placement_upper = placement.upper()
+        if placement_upper == "INSTAGRAM":
+            targeting: dict[str, Any] = {
+                "geo_locations": {"countries": ["US"]},
+                "publisher_platforms": ["instagram"],
+                "instagram_positions": ["stream", "story", "explore", "reels"],
+            }
+        elif placement_upper == "FACEBOOK":
+            targeting = {
+                "geo_locations": {"countries": ["US"]},
+                "publisher_platforms": ["facebook"],
+                "facebook_positions": ["feed", "story", "marketplace"],
+            }
+        else:
+            targeting = {
+                "geo_locations": {"countries": ["US"]},
+                "publisher_platforms": ["facebook", "instagram"],
+            }
+
+        payload: dict[str, Any] = {
+            "name": name,
+            "campaign_id": campaign_id,
+            "daily_budget": daily_budget_cents,
+            "billing_event": billing_event,
+            "optimization_goal": optimization_goal,
+            "targeting": targeting,
+            "status": status,
+            "access_token": self.access_token,
+        }
+
+        resp = await self.http.request("POST", url, json_data=payload)
+        res_data: dict[str, Any] = resp.json()
+        if "id" in res_data:
+            res_data["placement"] = placement_upper
+        return res_data

@@ -208,3 +208,64 @@ class FakePlatformAdapter(AdsPlatform):
             "applied_value": str(proposal.new_value),
             "updated_at": res.updated_at.isoformat(),
         }
+
+    async def create_campaign(
+        self,
+        account_id: str,
+        name: str,
+        objective: str = "OUTCOME_TRAFFIC",
+        status: str = "PAUSED",
+        daily_budget_cents: int | None = None,
+        placement: str = "ALL",  # ALL, INSTAGRAM, FACEBOOK
+        create_ad_set: bool = False,
+    ) -> dict[str, Any]:
+        cid = f"camp_{uuid.uuid4().hex[:8]}"
+        budget = (Decimal(str(daily_budget_cents)) / Decimal("100")) if daily_budget_cents else Decimal("10.00")
+        self.resources[cid] = PlatformResource(
+            platform=self.platform_name,
+            account_id=account_id,
+            resource_id=cid,
+            name=name,
+            status=status,
+            daily_budget=budget,
+            currency="USD",
+        )
+        res_data: dict[str, Any] = {
+            "id": cid,
+            "name": name,
+            "status": status,
+            "objective": objective,
+            "daily_budget": daily_budget_cents or 1000,
+            "placement": placement.upper(),
+        }
+        if create_ad_set:
+            res_data["ad_set"] = await self.create_ad_set(
+                account_id=account_id,
+                campaign_id=cid,
+                name=f"{name} - {placement.title()} Set",
+                daily_budget_cents=daily_budget_cents or 1000,
+                placement=placement,
+                status=status,
+            )
+        return res_data
+
+    async def create_ad_set(
+        self,
+        account_id: str,
+        campaign_id: str,
+        name: str,
+        daily_budget_cents: int = 1000,
+        placement: str = "ALL",
+        optimization_goal: str = "LINK_CLICKS",
+        billing_event: str = "IMPRESSIONS",
+        status: str = "PAUSED",
+    ) -> dict[str, Any]:
+        as_id = f"adset_{uuid.uuid4().hex[:8]}"
+        return {
+            "id": as_id,
+            "campaign_id": campaign_id,
+            "name": name,
+            "daily_budget": daily_budget_cents,
+            "placement": placement.upper(),
+            "status": status,
+        }

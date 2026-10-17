@@ -462,21 +462,34 @@ Account is currently clean and ready for first campaign creation.
   <!-- Create Campaign Modal -->
   <div class="modal" id="campaignModal">
     <div class="modal-content">
-      <h2 style="font-family: var(--heading-font); margin-bottom: 0.75rem;">Create New Facebook Ad Campaign</h2>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+        <h2 style="font-family: var(--heading-font); font-size: 1.35rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span>🚀</span> Create Meta Ad Campaign
+        </h2>
+        <span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc;">Facebook & Instagram</span>
+      </div>
       <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">
-        This will create a real campaign on Meta Ads Manager for <strong>act_2665580250239749</strong> (safely set to PAUSED initially so you can review):
+        Launch real ads across <strong>Facebook</strong> and <strong>Instagram</strong> for ad account <strong>act_2665580250239749</strong> (safely set to PAUSED initially for review):
       </p>
       <div class="form-group">
         <label>Campaign Name</label>
-        <input type="text" id="newCampName" placeholder="e.g. B-Fashion New Collection Launch">
+        <input type="text" id="newCampName" placeholder="e.g. B-Fashion Spring Collection (Instagram + FB)">
+      </div>
+      <div class="form-group">
+        <label>Placement Targeting (Facebook & Instagram)</label>
+        <select id="newCampPlacement">
+          <option value="ALL">🌐 Facebook &amp; Instagram (Advantage+ Placements - Recommended)</option>
+          <option value="INSTAGRAM">📸 Instagram Only (Reels, Stories, Feed, Explore)</option>
+          <option value="FACEBOOK">🔵 Facebook Only (Feed, Video Feeds, Marketplace)</option>
+        </select>
       </div>
       <div class="form-group">
         <label>Campaign Objective</label>
         <select id="newCampObjective">
-          <option value="OUTCOME_TRAFFIC">Traffic (Website Visitors)</option>
-          <option value="OUTCOME_SALES">Sales (Purchases / Orders)</option>
-          <option value="OUTCOME_ENGAGEMENT">Engagement (Page Likes / Messages)</option>
-          <option value="OUTCOME_AWARENESS">Awareness (Brand Reach)</option>
+          <option value="OUTCOME_TRAFFIC">Traffic (Website Visitors &amp; Store Clicks)</option>
+          <option value="OUTCOME_SALES">Sales (Purchases, Add-to-Cart &amp; Conversions)</option>
+          <option value="OUTCOME_ENGAGEMENT">Engagement (Page Likes, Post Comments, Reels Views)</option>
+          <option value="OUTCOME_AWARENESS">Awareness (Maximum Reach &amp; Brand Recognition)</option>
         </select>
       </div>
       <div class="form-group">
@@ -485,7 +498,7 @@ Account is currently clean and ready for first campaign creation.
       </div>
       <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
         <button class="btn btn-secondary" onclick="closeCreateCampaignModal()">Cancel</button>
-        <button class="btn btn-success" id="createCampBtn" onclick="createCampaign()">🚀 Create Campaign</button>
+        <button class="btn btn-success" id="createCampBtn" onclick="createCampaign()">🚀 Launch Campaign</button>
       </div>
     </div>
   </div>
@@ -615,10 +628,17 @@ Account is currently clean and ready for first campaign creation.
           totalConv += parseFloat(c.conversions || 0);
           const cpa = c.conversions > 0 ? `$${(parseFloat(c.spend) / c.conversions).toFixed(2)}` : 'N/A';
           const isAct = c.status === 'ACTIVE';
+          const placement = (c.placement || 'ALL').toUpperCase();
+          let placementBadge = '<span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4);">🌐 FB + INSTA</span>';
+          if (placement === 'INSTAGRAM') {
+            placementBadge = '<span class="badge" style="background: rgba(225, 48, 108, 0.2); color: #f43f5e; border: 1px solid rgba(225, 48, 108, 0.4);">📸 INSTAGRAM</span>';
+          } else if (placement === 'FACEBOOK') {
+            placementBadge = '<span class="badge" style="background: rgba(24, 119, 242, 0.2); color: #60a5fa; border: 1px solid rgba(24, 119, 242, 0.4);">🔵 FACEBOOK</span>';
+          }
           return `
             <tr>
               <td><strong>${c.name}</strong></td>
-              <td><span class="badge" style="background: rgba(255,255,255,0.08);">META</span></td>
+              <td>${placementBadge}</td>
               <td>$${parseFloat(c.budget || 10).toFixed(2)}</td>
               <td>$${parseFloat(c.spend || 0).toFixed(2)}</td>
               <td>${parseInt(c.impressions || 0).toLocaleString()}</td>
@@ -638,6 +658,7 @@ Account is currently clean and ready for first campaign creation.
 
     async function createCampaign() {
       const name = document.getElementById('newCampName').value.trim();
+      const placement = document.getElementById('newCampPlacement').value;
       const objective = document.getElementById('newCampObjective').value;
       const budget = parseFloat(document.getElementById('newCampBudget').value) || 10.0;
       const token = localStorage.getItem('meta_token_' + CLIENT_SLUG);
@@ -651,9 +672,37 @@ Account is currently clean and ready for first campaign creation.
       btn.innerText = 'Creating on Meta...';
       btn.disabled = true;
 
+      // 1. First attempt creation via local backend API (handles full Meta adapter + Ad set placement)
+      try {
+        const bResp = await fetch('/api/meta/create-campaign', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            client_slug: CLIENT_SLUG,
+            name: name,
+            objective: objective,
+            daily_budget_dollars: budget,
+            placement: placement,
+            use_fakes: !token,
+          })
+        });
+        if (bResp.ok) {
+          const bData = await bResp.json();
+          alert(`✅ Success! Campaign '${name}' created!\nPlacement: ${placement}\nStatus: PAUSED (safe for review)\nID: ${bData.data.id}`);
+          btn.innerText = '🚀 Launch Campaign';
+          btn.disabled = false;
+          closeCreateCampaignModal();
+          syncLiveMetrics();
+          return;
+        }
+      } catch (e) {
+        console.warn('Backend create endpoint not reached, checking direct Graph API:', e);
+      }
+
+      // 2. Direct Graph API fallback if running client-side without local server
       if (!token) {
-        alert('Meta Access Token is not set yet. Please click "Add Meta Access Token" first.');
-        btn.innerText = '🚀 Create Campaign';
+        alert('Meta Access Token is not set yet. Please click "1-Click Connect Token" first to connect your account.');
+        btn.innerText = '🚀 Launch Campaign';
         btn.disabled = false;
         closeCreateCampaignModal();
         openMetaModal();
@@ -661,7 +710,6 @@ Account is currently clean and ready for first campaign creation.
       }
 
       try {
-        // Direct Graph API call to create campaign on Meta Ads Manager
         const url = `https://graph.facebook.com/v19.0/${AD_ACCOUNT_ID}/campaigns`;
         const params = new URLSearchParams({
           name: name,
@@ -678,7 +726,7 @@ Account is currently clean and ready for first campaign creation.
         const resData = await resp.json();
 
         if (resData.id) {
-          alert(`Success! Real campaign created on Meta Ads Manager!\nCampaign ID: ${resData.id}\nStatus: PAUSED (safe for review)`);
+          alert(`✅ Success! Real campaign created on Meta Ads Manager!\nCampaign ID: ${resData.id}\nPlacement: ${placement}\nStatus: PAUSED (safe for review)`);
           closeCreateCampaignModal();
           syncLiveMetrics();
         } else {
@@ -687,7 +735,7 @@ Account is currently clean and ready for first campaign creation.
       } catch (err) {
         alert('Error creating campaign on Meta: ' + err.message);
       } finally {
-        btn.innerText = '🚀 Create Campaign';
+        btn.innerText = '🚀 Launch Campaign';
         btn.disabled = false;
       }
     }
