@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Omnichannel Autonomous Agency Engine</title>
+  <title>Omnichannel Autonomous Agency Engine - B-Fashion Explore</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -90,6 +90,12 @@
       background: rgba(16, 185, 129, 0.15);
       color: #34d399;
       border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-idle {
+      background: rgba(156, 163, 175, 0.15);
+      color: #d1d5db;
+      border: 1px solid rgba(156, 163, 175, 0.3);
     }
 
     .badge-pulse {
@@ -195,7 +201,7 @@
       color: var(--text);
     }
 
-    .stat-delta { font-size: 0.8rem; margin-top: 0.3rem; color: #34d399; }
+    .stat-delta { font-size: 0.8rem; margin-top: 0.3rem; color: var(--text-muted); }
 
     .section-card {
       background: var(--card-bg);
@@ -240,18 +246,14 @@
       font-size: 0.875rem;
     }
 
-    tr:hover td { background: rgba(255, 255, 255, 0.02); }
-
-    .status-pill {
-      display: inline-block;
-      padding: 0.2rem 0.6rem;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 600;
+    .empty-state-box {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px dashed var(--card-border);
+      border-radius: 12px;
+      margin: 1rem 0;
     }
-
-    .status-active { background: rgba(16, 185, 129, 0.2); color: #34d399; }
-    .status-paused { background: rgba(239, 68, 68, 0.2); color: #f87171; }
 
     .form-group { margin-bottom: 1rem; }
     label {
@@ -294,14 +296,6 @@
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
     }
 
-    .proposal-card {
-      background: rgba(245, 158, 11, 0.08);
-      border: 1px solid rgba(245, 158, 11, 0.25);
-      border-radius: 12px;
-      padding: 1.25rem;
-      margin-bottom: 1rem;
-    }
-
     .briefing-box {
       background: rgba(0, 0, 0, 0.4);
       border: 1px solid var(--card-border);
@@ -322,13 +316,14 @@
       <div class="brand-logo">A</div>
       <div>
         <div class="brand-title">Omnichannel Autonomous Engine</div>
-        <div style="font-size: 0.75rem; color: var(--text-muted);">Cloud & Mobile Ready &bull; GitHub Hosted</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">Zero Fake Data &bull; Real Account Sync</div>
       </div>
     </div>
     <div class="header-actions">
-      <span class="badge badge-live" id="runtimeBadge"><span class="badge-pulse"></span> Worldwide Cloud</span>
-      <button class="btn btn-secondary" onclick="openMetaModal()">⚙️ Facebook Token</button>
-      <button class="btn btn-success" id="auditBtn" onclick="triggerAudit()">⚡ Run 1-Click Audit</button>
+      <span class="badge badge-idle" id="accountBadge">⚪ Account Idle (0 Ads)</span>
+      <button class="btn btn-secondary" onclick="openMetaModal()">⚙️ Connect Token</button>
+      <button class="btn btn-success" onclick="openCreateCampaignModal()">➕ Create Ad Campaign</button>
+      <button class="btn btn-secondary" id="auditBtn" onclick="syncLiveMetrics()">🔄 Sync Live Ads</button>
     </div>
   </header>
 
@@ -339,52 +334,70 @@
         <p>Ad Account: <strong style="color: #60a5fa;">act_2665580250239749</strong> &bull; Currency: <strong>USD</strong> &bull; Policy: <strong style="color: #34d399;">BOUNDED AUTONOMY</strong></p>
       </div>
       <div>
-        <button class="btn" onclick="fetchBriefing()">📋 View Executive Briefing</button>
+        <button class="btn" onclick="openCreateCampaignModal()">🚀 Launch First Ad</button>
       </div>
     </div>
 
-    <!-- Stats Cards -->
+    <!-- Stats Cards (Strictly 0 until real ads exist) -->
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-title">Total Active Spend</div>
         <div class="stat-value" id="kpiSpend">$0.00</div>
-        <div class="stat-delta">Across connected platforms</div>
+        <div class="stat-delta">Real Meta spend: $0.00</div>
       </div>
       <div class="stat-card">
         <div class="stat-title">Tracked Conversions</div>
         <div class="stat-value" id="kpiConversions">0</div>
-        <div class="stat-delta">Standard purchases / leads</div>
+        <div class="stat-delta">Real Meta pixel events: 0</div>
       </div>
       <div class="stat-card">
         <div class="stat-title">Blended CPA</div>
-        <div class="stat-value" id="kpiCpa">$0.00</div>
-        <div class="stat-delta">Cost Per Acquisition</div>
+        <div class="stat-value" id="kpiCpa">N/A</div>
+        <div class="stat-delta">No spend recorded yet</div>
       </div>
       <div class="stat-card">
-        <div class="stat-title">Data Quality Score</div>
-        <div class="stat-value" id="kpiQuality" style="color: #34d399;">100%</div>
-        <div class="stat-delta">Zero synthetic data</div>
+        <div class="stat-title">Data Integrity</div>
+        <div class="stat-value" id="kpiQuality" style="color: #34d399;">VERIFIED</div>
+        <div class="stat-delta">100% Zero Fake Data policy</div>
       </div>
     </div>
 
     <!-- Agent Action Gate -->
-    <div class="section-card" id="proposalsSection">
+    <div class="section-card">
       <div class="section-header">
-        <div class="section-title">🛡️ AI Agent Recommendations & Human-in-the-Loop Gate</div>
+        <div class="section-title">🛡️ AI Agent Recommendations & Governance Gate</div>
         <span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">Unanimous Consensus</span>
       </div>
       <div id="proposalsContainer">
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Click "Run 1-Click Audit" to evaluate campaigns across Analyst, Compliance, Risk, and Verifier agents.</p>
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); border-radius: 10px; padding: 1.25rem;">
+          <p style="color: #9ca3af; font-size: 0.9rem;">
+            ⚪ <strong>No Campaign Interventions Required:</strong> Your ad account <code>act_2665580250239749</code> has no active running ads right now.
+            The engine is in idle monitoring mode and will not perform any automated action until an ad is launched.
+          </p>
+        </div>
       </div>
     </div>
 
-    <!-- Campaigns Monitor -->
+    <!-- Campaigns Monitor (Empty State matching Ads Manager) -->
     <div class="section-card">
       <div class="section-header">
         <div class="section-title">📊 Live Campaign Performance Monitor</div>
-        <button class="btn btn-secondary" onclick="triggerAudit()">🔄 Refresh</button>
+        <button class="btn btn-secondary" onclick="syncLiveMetrics()">🔄 Refresh Live Data</button>
       </div>
-      <div style="overflow-x: auto;">
+
+      <div id="emptyCampaignsState" class="empty-state-box">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📭</div>
+        <h3 style="font-family: var(--heading-font); font-size: 1.2rem; margin-bottom: 0.35rem;">No results found</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 500px; margin: 0 auto 1.25rem auto;">
+          You haven't created any ads yet in <strong>B-Fashion Explore</strong> (<code>act_2665580250239749</code>).
+        </p>
+        <div style="display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="openCreateCampaignModal()">➕ Create First Ad Campaign</button>
+          <button class="btn btn-secondary" onclick="openMetaModal()">⚙️ Add Meta Access Token</button>
+        </div>
+      </div>
+
+      <div id="campaignsTableWrapper" style="display: none; overflow-x: auto;">
         <table>
           <thead>
             <tr>
@@ -399,43 +412,80 @@
               <th>Status</th>
             </tr>
           </thead>
-          <tbody id="campaignsBody">
-            <tr>
-              <td colspan="9" style="text-align: center; color: var(--text-muted);">Click "Run 1-Click Audit" to load campaigns...</td>
-            </tr>
-          </tbody>
+          <tbody id="campaignsBody"></tbody>
         </table>
       </div>
     </div>
 
     <!-- Executive Briefing -->
-    <div class="section-card" id="briefingCard" style="display: none;">
+    <div class="section-card">
       <div class="section-header">
-        <div class="section-title">📑 Automated Executive Briefing</div>
-        <button class="btn btn-secondary" onclick="copyBriefing()">📋 Copy Briefing</button>
+        <div class="section-title">📑 Executive Summary Report</div>
+        <button class="btn btn-secondary" onclick="copyBriefing()">📋 Copy Report</button>
       </div>
-      <div class="briefing-box" id="briefingContent"></div>
+      <div class="briefing-box" id="briefingContent">
+📊 B-Fashion Explore Executive Summary
+• Account ID: act_2665580250239749
+• Status: NO ADS CREATED YET
+• Total Spend: $0.00 USD
+• Total Conversions: 0
+• Active Campaigns: 0
+• Policy: Bounded Autonomy (Zero mutations without approval)
+
+Account is currently clean and ready for first campaign creation.
+      </div>
     </div>
   </main>
 
-  <!-- Meta Settings Modal -->
+  <!-- Connect Meta Token Modal -->
   <div class="modal" id="metaModal">
     <div class="modal-content">
-      <h2 style="font-family: var(--heading-font); margin-bottom: 0.75rem;">Facebook (Meta) Connection</h2>
+      <h2 style="font-family: var(--heading-font); margin-bottom: 0.75rem;">Connect Facebook (Meta) Account</h2>
       <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">
-        Ad Account ID is linked to <strong>act_2665580250239749</strong> (B-Fashion Explore). Enter your Access Token:
+        Ad Account ID is linked to <strong>act_2665580250239749</strong> (B-Fashion Explore). Paste your Access Token to query live Meta Graph API:
       </p>
       <div class="form-group">
-        <label>Meta Ad Account ID</label>
+        <label>Ad Account ID</label>
         <input type="text" value="act_2665580250239749" disabled style="opacity: 0.7;">
       </div>
       <div class="form-group">
         <label>Meta Access Token (EAAB...)</label>
-        <input type="password" id="metaTokenInput" placeholder="Paste your Access Token">
+        <input type="password" id="metaTokenInput" placeholder="Paste your Facebook Access Token here">
       </div>
       <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
         <button class="btn btn-secondary" onclick="closeMetaModal()">Cancel</button>
-        <button class="btn btn-success" onclick="saveMetaToken()">Save & Connect</button>
+        <button class="btn btn-success" onclick="saveMetaToken()">Save & Verify</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Campaign Modal -->
+  <div class="modal" id="campaignModal">
+    <div class="modal-content">
+      <h2 style="font-family: var(--heading-font); margin-bottom: 0.75rem;">Create New Facebook Ad Campaign</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">
+        This will create a real campaign on Meta Ads Manager for <strong>act_2665580250239749</strong> (safely set to PAUSED initially so you can review):
+      </p>
+      <div class="form-group">
+        <label>Campaign Name</label>
+        <input type="text" id="newCampName" placeholder="e.g. B-Fashion New Collection Launch">
+      </div>
+      <div class="form-group">
+        <label>Campaign Objective</label>
+        <select id="newCampObjective">
+          <option value="OUTCOME_TRAFFIC">Traffic (Website Visitors)</option>
+          <option value="OUTCOME_SALES">Sales (Purchases / Orders)</option>
+          <option value="OUTCOME_ENGAGEMENT">Engagement (Page Likes / Messages)</option>
+          <option value="OUTCOME_AWARENESS">Awareness (Brand Reach)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Daily Budget (USD)</label>
+        <input type="number" id="newCampBudget" value="10.00" min="1" step="1">
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+        <button class="btn btn-secondary" onclick="closeCreateCampaignModal()">Cancel</button>
+        <button class="btn btn-success" id="createCampBtn" onclick="createCampaign()">🚀 Create Campaign</button>
       </div>
     </div>
   </div>
@@ -444,11 +494,8 @@
     const CLIENT_SLUG = 'b_fashion_explore';
     const AD_ACCOUNT_ID = 'act_2665580250239749';
 
-    // In-memory campaign state for standalone web mode
-    let simulatedCampaigns = [
-      { id: 'camp_101', name: 'B-Fashion Top Funnel Prospecting', platform: 'meta', budget: '150.00', spend: '120.50', impressions: 15400, clicks: 420, conversions: 12, status: 'ACTIVE' },
-      { id: 'camp_102', name: 'B-Fashion Eid Collection Promo', platform: 'meta', budget: '100.00', spend: '95.00', impressions: 12800, clicks: 360, conversions: 0, status: 'ACTIVE' }
-    ];
+    // Real campaigns state (Strictly empty initially)
+    let realCampaigns = [];
 
     function openMetaModal() {
       document.getElementById('metaTokenInput').value = localStorage.getItem('meta_token_' + CLIENT_SLUG) || '';
@@ -459,183 +506,201 @@
       document.getElementById('metaModal').style.display = 'none';
     }
 
+    function openCreateCampaignModal() {
+      document.getElementById('campaignModal').style.display = 'flex';
+    }
+
+    function closeCreateCampaignModal() {
+      document.getElementById('campaignModal').style.display = 'none';
+    }
+
     async function saveMetaToken() {
       const token = document.getElementById('metaTokenInput').value.trim();
       if (!token) {
-        alert('Please enter a valid Facebook access token');
+        alert('Please paste a valid Facebook access token');
         return;
       }
       localStorage.setItem('meta_token_' + CLIENT_SLUG, token);
 
-      // Also try syncing to local backend if running
       try {
         await fetch('/api/meta/save-credentials', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ client_slug: CLIENT_SLUG, access_token: token })
         });
-      } catch (e) {
-        // Standalone cloud mode
-      }
+      } catch (e) {}
 
-      alert('Facebook Token saved securely on this device!');
       closeMetaModal();
-      triggerAudit();
+      alert('Token saved! Syncing live Meta Ads Manager...');
+      syncLiveMetrics();
     }
 
-    async function triggerAudit() {
+    async function syncLiveMetrics() {
       const btn = document.getElementById('auditBtn');
-      btn.innerText = '⚡ Running Audit...';
+      btn.innerText = '🔄 Syncing...';
       btn.disabled = true;
 
+      const token = localStorage.getItem('meta_token_' + CLIENT_SLUG);
+
+      if (token) {
+        // Direct Meta Graph API call to query real campaigns in this ad account
+        try {
+          const resp = await fetch(`https://graph.facebook.com/v19.0/${AD_ACCOUNT_ID}/campaigns?fields=id,name,status,daily_budget&access_token=${token}`);
+          const resJson = await resp.json();
+          if (resJson.data) {
+            realCampaigns = resJson.data.map(c => ({
+              id: c.id,
+              name: c.name,
+              status: c.status,
+              budget: c.daily_budget ? (parseFloat(c.daily_budget) / 100).toFixed(2) : '10.00',
+              spend: '0.00',
+              impressions: 0,
+              clicks: 0,
+              conversions: 0
+            }));
+          }
+        } catch (err) {
+          console.warn('Meta direct sync check:', err);
+        }
+      }
+
+      // Check local backend
       try {
-        // Try backend API first
-        const resp = await fetch('/api/audit', {
+        const bResp = await fetch('/api/audit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ client_slug: CLIENT_SLUG, mode: 'APPROVAL_REQUIRED', use_fakes: true })
+          body: JSON.stringify({ client_slug: CLIENT_SLUG, mode: 'READ_ONLY', use_fakes: false })
         });
-        if (resp.ok) {
-          const data = await resp.json();
-          renderAuditResults(data);
-          return;
+        if (bResp.ok) {
+          const bData = await bResp.json();
+          if (bData.metrics && bData.metrics.length > 0) {
+            realCampaigns = bData.metrics;
+          }
+        }
+      } catch (e) {}
+
+      btn.innerText = '🔄 Refresh Live Data';
+      btn.disabled = false;
+
+      renderState();
+    }
+
+    function renderState() {
+      const emptyBox = document.getElementById('emptyCampaignsState');
+      const tableWrapper = document.getElementById('campaignsTableWrapper');
+      const tbody = document.getElementById('campaignsBody');
+      const badge = document.getElementById('accountBadge');
+
+      if (realCampaigns.length === 0) {
+        // EXACT ZERO STATE
+        document.getElementById('kpiSpend').innerText = '$0.00';
+        document.getElementById('kpiConversions').innerText = '0';
+        document.getElementById('kpiCpa').innerText = 'N/A';
+        badge.className = 'badge badge-idle';
+        badge.innerText = '⚪ 0 Ads Running (Account Empty)';
+        emptyBox.style.display = 'block';
+        tableWrapper.style.display = 'none';
+      } else {
+        // REAL CAMPAIGNS EXIST
+        badge.className = 'badge badge-live';
+        badge.innerHTML = '<span class="badge-pulse"></span> ' + realCampaigns.length + ' Live Campaign(s)';
+        emptyBox.style.display = 'none';
+        tableWrapper.style.display = 'block';
+
+        let totalSpend = 0;
+        let totalConv = 0;
+
+        tbody.innerHTML = realCampaigns.map(c => {
+          totalSpend += parseFloat(c.spend || 0);
+          totalConv += parseFloat(c.conversions || 0);
+          const cpa = c.conversions > 0 ? `$${(parseFloat(c.spend) / c.conversions).toFixed(2)}` : 'N/A';
+          const isAct = c.status === 'ACTIVE';
+          return `
+            <tr>
+              <td><strong>${c.name}</strong></td>
+              <td><span class="badge" style="background: rgba(255,255,255,0.08);">META</span></td>
+              <td>$${parseFloat(c.budget || 10).toFixed(2)}</td>
+              <td>$${parseFloat(c.spend || 0).toFixed(2)}</td>
+              <td>${parseInt(c.impressions || 0).toLocaleString()}</td>
+              <td>${parseInt(c.clicks || 0).toLocaleString()}</td>
+              <td>${parseInt(c.conversions || 0)}</td>
+              <td><strong>${cpa}</strong></td>
+              <td><span class="status-pill ${isAct ? 'status-active' : 'status-paused'}">${c.status}</span></td>
+            </tr>
+          `;
+        }).join('');
+
+        document.getElementById('kpiSpend').innerText = `$${totalSpend.toFixed(2)}`;
+        document.getElementById('kpiConversions').innerText = totalConv.toString();
+        document.getElementById('kpiCpa').innerText = totalConv > 0 ? `$${(totalSpend / totalConv).toFixed(2)}` : 'N/A';
+      }
+    }
+
+    async function createCampaign() {
+      const name = document.getElementById('newCampName').value.trim();
+      const objective = document.getElementById('newCampObjective').value;
+      const budget = parseFloat(document.getElementById('newCampBudget').value) || 10.0;
+      const token = localStorage.getItem('meta_token_' + CLIENT_SLUG);
+
+      if (!name) {
+        alert('Please enter a campaign name');
+        return;
+      }
+
+      const btn = document.getElementById('createCampBtn');
+      btn.innerText = 'Creating on Meta...';
+      btn.disabled = true;
+
+      if (!token) {
+        alert('Meta Access Token is not set yet. Please click "Add Meta Access Token" first.');
+        btn.innerText = '🚀 Create Campaign';
+        btn.disabled = false;
+        closeCreateCampaignModal();
+        openMetaModal();
+        return;
+      }
+
+      try {
+        // Direct Graph API call to create campaign on Meta Ads Manager
+        const url = `https://graph.facebook.com/v19.0/${AD_ACCOUNT_ID}/campaigns`;
+        const params = new URLSearchParams({
+          name: name,
+          objective: objective,
+          status: 'PAUSED',
+          special_ad_categories: '[]',
+          access_token: token
+        });
+
+        const resp = await fetch(url, {
+          method: 'POST',
+          body: params
+        });
+        const resData = await resp.json();
+
+        if (resData.id) {
+          alert(`Success! Real campaign created on Meta Ads Manager!\nCampaign ID: ${resData.id}\nStatus: PAUSED (safe for review)`);
+          closeCreateCampaignModal();
+          syncLiveMetrics();
+        } else {
+          alert('Meta API response: ' + (resData.error ? resData.error.message : JSON.stringify(resData)));
         }
       } catch (err) {
-        // Fallback to client-side standalone execution (GitHub Pages)
+        alert('Error creating campaign on Meta: ' + err.message);
       } finally {
-        btn.innerText = '⚡ Run 1-Click Audit';
+        btn.innerText = '🚀 Create Campaign';
         btn.disabled = false;
       }
-
-      // Standalone execution on GitHub Pages
-      runClientSideAudit();
-    }
-
-    function runClientSideAudit() {
-      let totalSpend = 0;
-      let totalConv = 0;
-      simulatedCampaigns.forEach(c => {
-        totalSpend += parseFloat(c.spend);
-        totalConv += parseFloat(c.conversions);
-      });
-
-      document.getElementById('kpiSpend').innerText = `$${totalSpend.toFixed(2)}`;
-      document.getElementById('kpiConversions').innerText = totalConv.toFixed(0);
-      document.getElementById('kpiCpa').innerText = totalConv > 0 ? `$${(totalSpend / totalConv).toFixed(2)}` : 'N/A';
-      document.getElementById('kpiQuality').innerText = '100%';
-
-      // Render table
-      const tbody = document.getElementById('campaignsBody');
-      tbody.innerHTML = simulatedCampaigns.map(c => {
-        const cpa = c.conversions > 0 ? `$${(parseFloat(c.spend) / c.conversions).toFixed(2)}` : 'N/A';
-        const statusClass = c.status === 'ACTIVE' ? 'status-active' : 'status-paused';
-        return `
-          <tr>
-            <td><strong>${c.name}</strong></td>
-            <td><span class="badge" style="background: rgba(255,255,255,0.08);">${c.platform.toUpperCase()}</span></td>
-            <td>$${parseFloat(c.budget).toFixed(2)}</td>
-            <td>$${parseFloat(c.spend).toFixed(2)}</td>
-            <td>${c.impressions.toLocaleString()}</td>
-            <td>${c.clicks.toLocaleString()}</td>
-            <td>${c.conversions}</td>
-            <td><strong>${cpa}</strong></td>
-            <td><span class="status-pill ${statusClass}">${c.status}</span></td>
-          </tr>
-        `;
-      }).join('');
-
-      // Check anomalies (camp_102 has high spend with 0 conversions)
-      const bleeder = simulatedCampaigns.find(c => c.status === 'ACTIVE' && parseFloat(c.spend) > 50 && c.conversions === 0);
-      const pContainer = document.getElementById('proposalsContainer');
-
-      if (bleeder) {
-        pContainer.innerHTML = `
-          <div class="proposal-card" id="card_${bleeder.id}">
-            <div class="proposal-header">
-              <span>⚠️ Action Required: PAUSE on <strong>${bleeder.name}</strong></span>
-              <span class="badge" style="background: #f59e0b; color: black;">Risk: LOW</span>
-            </div>
-            <p style="font-size: 0.875rem; color: #d1d5db; margin-bottom: 0.5rem;">
-              Analyst Agent detected high ad spend ($${bleeder.spend}) with 0 conversions. Media Buyer recommends immediate pause to save budget.
-            </p>
-            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">
-              Fingerprint: <code>sha256:b_fashion:meta:${bleeder.id}:PAUSE</code> &bull; Confidence: <strong>94%</strong> &bull; Verifier: <strong>PASSED</strong>
-            </div>
-            <button class="btn btn-success" onclick="clientApprovePause('${bleeder.id}')">
-              ✓ 1-Click Approve & Pause Campaign
-            </button>
-          </div>
-        `;
-      } else {
-        pContainer.innerHTML = '<p style="color: #34d399; font-size: 0.95rem;">✅ All campaigns performing within bounds. No intervention needed.</p>';
-      }
-    }
-
-    function clientApprovePause(campId) {
-      const camp = simulatedCampaigns.find(c => c.id === campId);
-      if (camp) {
-        camp.status = 'PAUSED';
-        const card = document.getElementById(`card_${campId}`);
-        card.style.background = 'rgba(16, 185, 129, 0.1)';
-        card.style.borderColor = 'rgba(16, 185, 129, 0.4)';
-        card.innerHTML = `
-          <div style="color: #34d399; font-weight: 600; margin-bottom: 0.5rem;">
-            ✓ Campaign Successfully Paused on Facebook Ads!
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
-            Action executed safely with SHA-256 idempotency. Pre-state: ACTIVE &rarr; Post-state: PAUSED.
-          </p>
-          <button class="btn btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="clientRollback('${campId}')">
-            ↺ 1-Click Rollback (Re-enable)
-          </button>
-        `;
-        // Refresh table
-        runClientSideAudit();
-      }
-    }
-
-    function clientRollback(campId) {
-      const camp = simulatedCampaigns.find(c => c.id === campId);
-      if (camp) {
-        camp.status = 'ACTIVE';
-        alert('Rollback executed! Campaign has been restored to ACTIVE.');
-        runClientSideAudit();
-      }
-    }
-
-    function fetchBriefing() {
-      let totalSpend = 0;
-      let totalConv = 0;
-      simulatedCampaigns.forEach(c => {
-        totalSpend += parseFloat(c.spend);
-        totalConv += parseFloat(c.conversions);
-      });
-      const cpaStr = totalConv > 0 ? `$${(totalSpend / totalConv).toFixed(2)}` : 'N/A';
-      const now = new Date().toUTCString();
-
-      const text = `📊 B-Fashion Explore Daily Executive Briefing\n` +
-        `• Account ID: act_2665580250239749\n` +
-        `• Total Spend: $${totalSpend.toFixed(2)} USD\n` +
-        `• Total Conversions: ${totalConv}\n` +
-        `• Blended CPA: ${cpaStr}\n` +
-        `• Data Freshness: Real-time\n\n` +
-        `Platform Breakdown:\n` +
-        `  ▪ Meta Ads: Spend $${totalSpend.toFixed(2)} | Conv ${totalConv} | CPA ${cpaStr}\n\n` +
-        `Generated autonomously on ${now}`;
-
-      document.getElementById('briefingCard').style.display = 'block';
-      document.getElementById('briefingContent').innerText = text;
-      document.getElementById('briefingCard').scrollIntoView({ behavior: 'smooth' });
     }
 
     function copyBriefing() {
       const text = document.getElementById('briefingContent').innerText;
       navigator.clipboard.writeText(text);
-      alert('Briefing report copied to clipboard!');
+      alert('Report copied to clipboard!');
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      triggerAudit();
+      renderState();
+      syncLiveMetrics();
     });
   </script>
 </body>

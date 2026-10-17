@@ -120,3 +120,29 @@ class MetaPlatformAdapter(AdsPlatform):
         resp = await self.http.request("POST", url, json_data=payload)
         res_data: dict[str, Any] = resp.json()
         return res_data
+
+    async def create_campaign(
+        self,
+        account_id: str,
+        name: str,
+        objective: str = "OUTCOME_TRAFFIC",
+        status: str = "PAUSED",
+        daily_budget_cents: int | None = None,
+    ) -> dict[str, Any]:
+        """Create a new campaign on Meta Ads Manager (defaults to PAUSED for safety)."""
+        clean_act = account_id if account_id.startswith("act_") else f"act_{account_id}"
+        url = f"{self.base_url}/{self.api_version}/{clean_act}/campaigns"
+        payload: dict[str, Any] = {
+            "name": name,
+            "objective": objective,
+            "status": status,
+            "special_ad_categories": [],
+            "access_token": self.access_token,
+        }
+        if daily_budget_cents:
+            payload["daily_budget"] = daily_budget_cents
+
+        resp = await self.http.request("POST", url, json_data=payload)
+        res_data: dict[str, Any] = resp.json()
+        return res_data
+

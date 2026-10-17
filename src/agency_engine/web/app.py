@@ -102,6 +102,51 @@ async def save_meta_credentials(req: SaveCredentialsRequest) -> dict[str, Any]:
     return {"success": True, "message": f"Token saved securely as {var_name}"}
 
 
+class CreateCampaignRequest(BaseModel):
+    client_slug: str = "b_fashion_explore"
+    name: str
+    objective: str = "OUTCOME_TRAFFIC"
+    daily_budget_dollars: float = 10.0
+
+
+@app.post("/api/meta/create-campaign")
+async def create_meta_campaign(req: CreateCampaignRequest) -> dict[str, Any]:
+    settings = load_settings()
+    c = settings.clients.get(req.client_slug)
+    if not c:
+        raise HTTPException(status_code=404, detail="Client not found.")
+
+    p_meta = c.platforms.get("meta")
+    if not p_meta:
+        raise HTTPException(status_code=400, detail="Meta platform not configured for client.")
+
+    secret_prov = get_secret_provider(settings.secret_provider)
+    try:
+        token = secret_prov.get_secret(p_meta.secret_ref)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=400,
+            detail="Meta Access Token is not configured yet. Please add your token via 'Facebook Token' button.",
+        ) from exc
+
+    from agency_engine.platforms.meta import MetaPlatformAdapter
+
+    adapter = MetaPlatformAdapter(access_token=token, client_slug=req.client_slug)
+    cents = int(req.daily_budget_dollars * 100)
+    try:
+        res = await adapter.create_campaign(
+            account_id=p_meta.account_id,
+            name=req.name,
+            objective=req.objective,
+            daily_budget_cents=cents,
+            status="PAUSED",  # Always paused initially for safety
+        )
+        return {"success": True, "data": res, "message": f"Campaign '{req.name}' successfully created (PAUSED for safety)!"}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Meta API error: {str(exc)}") from exc
+
+
+
 class AuditRequest(BaseModel):
     client_slug: str = "b_fashion_explore"
     mode: str = "READ_ONLY"
@@ -118,31 +163,44 @@ async def run_audit(req: AuditRequest) -> dict[str, Any]:
     autonomy_mode = AutonomyMode(req.mode.upper().replace("-", "_"))
     secret_prov = get_secret_provider(settings.secret_provider)
 
-    adapters = []
-    for p_name, p_cfg in c.platforms.items():
-        if p_cfg.enabled:
-            adap = get_platform_adapter(
-                platform=PlatformName(p_name),
-                client_slug=req.client_slug,
-                secret_provider=secret_prov,
-                secret_ref=p_cfg.secret_ref,
-                use_fakes=req.use_fakes,
-            )
-            adapters.append((adap, p_cfg.account_id))
+    # For real client accounts without live tokens or active ads, do not generate fake data
+    metrics: list[Any] = []
+    p_meta = c.platforms.get("meta")
+    has_token = False
+    if p_meta:
+        try:
+            token = secret_prov.get_secret(p_meta.secret_ref)
+            has_token = bool(token and token.startswith("EAA"))
+        except Exception:
+            has_token = False
 
-    fetcher = MetricFetcher()
-    ingest_res = await fetcher.fetch_all_platforms(
-        adapters_with_accounts=adapters,
-        target_currency=c.reporting_currency,
-        timezone_str=c.timezone,
-    )
+    if has_token:
+        adapters = []
+        for p_name, p_cfg in c.platforms.items():
+            if p_cfg.enabled:
+                adap = get_platform_adapter(
+                    platform=PlatformName(p_name),
+                    client_slug=req.client_slug,
+                    secret_provider=secret_prov,
+                    secret_ref=p_cfg.secret_ref,
+                    use_fakes=False,
+                )
+                adapters.append((adap, p_cfg.account_id))
 
-    metrics = ingest_res["metrics"]
+        fetcher = MetricFetcher()
+        ingest_res = await fetcher.fetch_all_platforms(
+            adapters_with_accounts=adapters,
+            target_currency=c.reporting_currency,
+            timezone_str=c.timezone,
+        )
+        metrics = ingest_res.get("metrics", [])
 
-    # Save to database
-    async with db_mgr.session_factory() as session:
-        repo = RepositoryManager(session)
-        await repo.save_metrics(metrics)
+    # Save to database if metrics exist
+    if metrics:
+        async with db_mgr.session_factory() as session:
+            repo = RepositoryManager(session)
+            await repo.save_metrics(metrics)
+
 
     # Multi-Agent Workflow
     analyst = AnalystAgent()
