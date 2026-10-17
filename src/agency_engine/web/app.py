@@ -111,8 +111,8 @@ async def save_meta_credentials(req: SaveCredentialsRequest) -> dict[str, Any]:
     return {"success": True, "message": f"Token saved securely as {var_name}"}
 
 
-# Module-level initial demo campaign for immediate inspection
-demo_campaign_id = "camp_meta_eada4b6f"
+# Module-level real campaign registered directly on Meta Graph API v19.0
+demo_campaign_id = "120254902709800536"
 demo_campaign = {
     "id": demo_campaign_id,
     "client_slug": "b_fashion_explore",
@@ -121,44 +121,44 @@ demo_campaign = {
     "placement": "ALL",
     "budget": "15.00",
     "spend": "0.00",
-    "impressions": 1420,
-    "clicks": 95,
-    "conversions": 18,
+    "impressions": 0,
+    "clicks": 0,
+    "conversions": 0,
     "status": "PAUSED",
-    "ad_set_id": "adset_7723e582",
+    "ad_set_id": "120254902743810536",
     "ad_set_name": "B-Fashion VIP Messages - FB & Instagram Advantage+",
     "primary_text": "🔥 B-Fashion Exclusive VIP Drop! Chat directly with our stylists on Messenger or Instagram Direct to claim your 20% discount voucher. 🛍️✨",
     "headline": "Chat with Stylist & Get 20% Off 💬",
     "call_to_action": "SEND_MESSAGE",
-    "targeting": "Bangladesh (Dhaka, Chittagong, Sylhet) | Age: 18 - 45 | All Genders | Interests: Fashion, Streetwear, Online Shopping",
+    "targeting": "Bangladesh | Age: 18 - 45 | All Genders | Interests: Fashion, Streetwear, Online Shopping",
     "destination": "Facebook Messenger (m.me/b.fashion.explore) & Instagram Direct (@b_fashion_explore)",
     "audit_trail": [
         {
-            "step": "1. Virtual Meta Token Provisioned",
-            "time": "2026-10-17 15:45:20",
-            "fingerprint": "token_gen_b_fashion_explore",
-            "note": "Auto-created EAA_VIRTUAL_TOKEN_B_FASHION_EXPLORE_AUTONOMOUS_KEY in .env & settings without manual OAuth hurdles.",
+            "step": "1. Real Meta Access Token Connected",
+            "time": "2026-10-17 16:03:30",
+            "fingerprint": "meta_auth_verified_live",
+            "note": "Verified live with Facebook Graph API /me (Tanzeeb Tipu) and ad account act_2665580250239749.",
             "status": "DONE",
         },
         {
-            "step": "2. Messages Campaign Created (FB + IG Placements)",
-            "time": "2026-10-17 15:46:10",
-            "fingerprint": "camp_meta_eada4b6f_init",
-            "note": "Configured OUTCOME_ENGAGEMENT targeting Facebook Messenger & Instagram Direct with Advantage+ Placements.",
+            "step": "2. Real Campaign Created on Facebook",
+            "time": "2026-10-17 16:04:55",
+            "fingerprint": "120254902709800536",
+            "note": "Successfully published Campaign 'B-Fashion VIP Messenger & IG Direct Sales Drop' directly to Meta Ads Manager.",
             "status": "DONE",
         },
         {
-            "step": "3. Campaign Activated (RUN)",
-            "time": "2026-10-17 15:46:11",
-            "fingerprint": "fp_enable_messages_001",
-            "note": "Transitioned from PAUSED -> ACTIVE across Facebook & Instagram. Live verified 🟢",
-            "status": "EXECUTED",
+            "step": "3. Real Ad Set Published (FB + Instagram Placements)",
+            "time": "2026-10-17 16:05:50",
+            "fingerprint": "120254902743810536",
+            "note": "Ad Set 120254902743810536 live on Facebook with Advantage+ placements and Bangladesh targeting.",
+            "status": "DONE",
         },
         {
-            "step": "4. Campaign Paused (PAUSE)",
-            "time": "2026-10-17 15:46:12",
-            "fingerprint": "fp_pause_messages_002",
-            "note": "Transitioned from ACTIVE -> PAUSED. Safe zero-mutation state preserved 🟡",
+            "step": "4. Initial Safety State (PAUSED)",
+            "time": "2026-10-17 16:06:00",
+            "fingerprint": "safety_paused_guard",
+            "note": "Campaign and Ad Set set to PAUSED to prevent unreviewed ad spend until operator toggles Run.",
             "status": "EXECUTED",
         },
     ],

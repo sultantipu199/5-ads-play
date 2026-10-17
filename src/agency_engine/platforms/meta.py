@@ -246,6 +246,7 @@ class MetaPlatformAdapter(AdsPlatform):
             "objective": objective,
             "status": status,
             "special_ad_categories": [],
+            "is_adset_budget_sharing_enabled": False,
             "access_token": self.access_token,
         }
         if daily_budget_cents:
@@ -299,19 +300,19 @@ class MetaPlatformAdapter(AdsPlatform):
 
         if placement_upper == "INSTAGRAM":
             targeting: dict[str, Any] = {
-                "geo_locations": {"countries": ["US"]},
+                "geo_locations": {"countries": ["BD"]},
                 "publisher_platforms": ["instagram"],
                 "instagram_positions": ["stream", "story", "explore", "reels"],
             }
         elif placement_upper == "FACEBOOK":
             targeting = {
-                "geo_locations": {"countries": ["US"]},
+                "geo_locations": {"countries": ["BD"]},
                 "publisher_platforms": ["facebook"],
                 "facebook_positions": ["feed", "story", "marketplace"],
             }
         else:
             targeting = {
-                "geo_locations": {"countries": ["US"]},
+                "geo_locations": {"countries": ["BD"]},
                 "publisher_platforms": ["facebook", "instagram"],
             }
 
@@ -321,6 +322,7 @@ class MetaPlatformAdapter(AdsPlatform):
             "daily_budget": daily_budget_cents,
             "billing_event": billing_event,
             "optimization_goal": optimization_goal,
+            "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
             "targeting": targeting,
             "status": status,
             "access_token": self.access_token,
